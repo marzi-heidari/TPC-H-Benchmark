@@ -1,0 +1,22 @@
+
+== Physical Plan ==
+*(9) Sort [custdist#1077L DESC NULLS LAST, c_count#1071L DESC NULLS LAST], true, 0
++- Exchange rangepartitioning(custdist#1077L DESC NULLS LAST, c_count#1071L DESC NULLS LAST, 200)
+   +- *(8) HashAggregate(keys=[c_count#1071L], functions=[count(o_custkey#957)])
+      +- Exchange hashpartitioning(c_count#1071L, 200)
+         +- *(7) HashAggregate(keys=[c_count#1071L], functions=[partial_count(o_custkey#957)])
+            +- *(7) HashAggregate(keys=[o_custkey#957], functions=[count(o_orderkey#956)])
+               +- Exchange hashpartitioning(o_custkey#957, 200)
+                  +- *(6) HashAggregate(keys=[o_custkey#957], functions=[partial_count(o_orderkey#956)])
+                     +- *(6) Project [o_orderkey#956, o_custkey#957]
+                        +- SortMergeJoin [c_custkey#976], [o_custkey#957], LeftOuter
+                           :- *(2) Sort [c_custkey#976 ASC NULLS FIRST], false, 0
+                           :  +- Exchange hashpartitioning(c_custkey#976, 200)
+                           :     +- *(1) FileScan parquet [c_custkey#976] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.parquet], PartitionFilters: [], PushedFilters: [], ReadSchema: struct<c_custkey:int>
+                           +- *(5) Sort [o_custkey#957 ASC NULLS FIRST], false, 0
+                              +- Exchange hashpartitioning(o_custkey#957, 200)
+                                 +- *(4) Project [o_orderkey#956, o_custkey#957]
+                                    +- *(4) Project [o_orderkey#956, o_custkey#957, o_comment#964]
+                                       +- *(4) Filter NOT pythonUDF0#1094
+                                          +- BatchEvalPython [<lambda>(o_comment#964)], [o_orderkey#956, o_custkey#957, o_comment#964, pythonUDF0#1094]
+                                             +- *(3) FileScan parquet [o_orderkey#956,o_custkey#957,o_comment#964] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.parquet], PartitionFilters: [], PushedFilters: [], ReadSchema: struct<o_orderkey:int,o_custkey:int,o_comment:string>
