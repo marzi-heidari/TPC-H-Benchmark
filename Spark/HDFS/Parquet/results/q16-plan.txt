@@ -1,0 +1,34 @@
+
+== Physical Plan ==
+*(11) Sort [supplier_count#3597L DESC NULLS LAST, p_brand#11 ASC NULLS FIRST, p_type#12 ASC NULLS FIRST, p_size#13 ASC NULLS FIRST], true, 0
++- Exchange rangepartitioning(supplier_count#3597L DESC NULLS LAST, p_brand#11 ASC NULLS FIRST, p_type#12 ASC NULLS FIRST, p_size#13 ASC NULLS FIRST, 200)
+   +- *(10) HashAggregate(keys=[p_brand#11, p_type#12, p_size#13], functions=[count(distinct ps_suppkey#29)])
+      +- Exchange hashpartitioning(p_brand#11, p_type#12, p_size#13, 200)
+         +- *(9) HashAggregate(keys=[p_brand#11, p_type#12, p_size#13], functions=[partial_count(distinct ps_suppkey#29)])
+            +- *(9) HashAggregate(keys=[p_brand#11, p_type#12, p_size#13, ps_suppkey#29], functions=[])
+               +- Exchange hashpartitioning(p_brand#11, p_type#12, p_size#13, ps_suppkey#29, 200)
+                  +- *(8) HashAggregate(keys=[p_brand#11, p_type#12, p_size#13, ps_suppkey#29], functions=[])
+                     +- *(8) Project [ps_suppkey#29, p_brand#11, p_type#12, p_size#13]
+                        +- *(8) SortMergeJoin [ps_partkey#28], [p_partkey#8], Inner
+                           :- *(4) Sort [ps_partkey#28 ASC NULLS FIRST], false, 0
+                           :  +- Exchange hashpartitioning(ps_partkey#28, 200)
+                           :     +- *(3) Project [ps_partkey#28, ps_suppkey#29]
+                           :        +- *(3) BroadcastHashJoin [s_suppkey#40], [ps_suppkey#29], Inner, BuildLeft
+                           :           :- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[0, int, true] as bigint)))
+                           :           :  +- *(2) Project [s_suppkey#40]
+                           :           :     +- *(2) Project [s_suppkey#40, s_comment#46]
+                           :           :        +- *(2) Filter NOT pythonUDF0#3645
+                           :           :           +- BatchEvalPython [<lambda>(s_comment#46)], [s_suppkey#40, s_comment#46, pythonUDF0#3645]
+                           :           :              +- *(1) Filter isnotnull(s_suppkey#40)
+                           :           :                 +- *(1) FileScan parquet [s_suppkey#40,s_comment#46] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/supplier.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(s_suppkey)], ReadSchema: struct<s_suppkey:int,s_comment:string>
+                           :           +- *(3) Project [ps_partkey#28, ps_suppkey#29]
+                           :              +- *(3) Filter (isnotnull(ps_suppkey#29) && isnotnull(ps_partkey#28))
+                           :                 +- *(3) FileScan parquet [ps_partkey#28,ps_suppkey#29] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/partsupp.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(ps_suppkey), IsNotNull(ps_partkey)], ReadSchema: struct<ps_partkey:int,ps_suppkey:int>
+                           +- *(7) Sort [p_partkey#8 ASC NULLS FIRST], false, 0
+                              +- Exchange hashpartitioning(p_partkey#8, 200)
+                                 +- *(6) Project [p_partkey#8, p_brand#11, p_type#12, p_size#13]
+                                    +- *(6) Project [p_partkey#8, p_brand#11, p_type#12, p_size#13]
+                                       +- *(6) Filter (NOT pythonUDF0#3646 && pythonUDF1#3647)
+                                          +- BatchEvalPython [<lambda>(p_type#12), <lambda>(p_size#13)], [p_partkey#8, p_brand#11, p_type#12, p_size#13, pythonUDF0#3646, pythonUDF1#3647]
+                                             +- *(5) Filter ((isnotnull(p_brand#11) && NOT (p_brand#11 = Brand#45)) && isnotnull(p_partkey#8))
+                                                +- *(5) FileScan parquet [p_partkey#8,p_brand#11,p_type#12,p_size#13] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/part.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(p_brand), Not(EqualTo(p_brand,Brand#45)), IsNotNull(p_partkey)], ReadSchema: struct<p_partkey:int,p_brand:string,p_type:string,p_size:int>

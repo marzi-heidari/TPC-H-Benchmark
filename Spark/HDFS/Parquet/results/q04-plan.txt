@@ -1,0 +1,21 @@
+
+== Physical Plan ==
+*(7) Sort [o_orderpriority#103 ASC NULLS FIRST], true, 0
++- Exchange rangepartitioning(o_orderpriority#103 ASC NULLS FIRST, 200)
+   +- *(6) HashAggregate(keys=[o_orderpriority#103], functions=[count(o_orderpriority#103)])
+      +- Exchange hashpartitioning(o_orderpriority#103, 200)
+         +- *(5) HashAggregate(keys=[o_orderpriority#103], functions=[partial_count(o_orderpriority#103)])
+            +- *(5) Project [o_orderpriority#103]
+               +- *(5) SortMergeJoin [l_orderkey#64], [o_orderkey#98], Inner
+                  :- *(2) Sort [l_orderkey#64 ASC NULLS FIRST], false, 0
+                  :  +- *(2) HashAggregate(keys=[l_orderkey#64], functions=[])
+                  :     +- Exchange hashpartitioning(l_orderkey#64, 200)
+                  :        +- *(1) HashAggregate(keys=[l_orderkey#64], functions=[])
+                  :           +- *(1) Project [l_orderkey#64]
+                  :              +- *(1) Filter (((isnotnull(l_commitdate#75) && isnotnull(l_receiptdate#76)) && (l_commitdate#75 < l_receiptdate#76)) && isnotnull(l_orderkey#64))
+                  :                 +- *(1) FileScan parquet [l_orderkey#64,l_commitdate#75,l_receiptdate#76] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(l_commitdate), IsNotNull(l_receiptdate), IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_commitdate:string,l_receiptdate:string>
+                  +- *(4) Sort [o_orderkey#98 ASC NULLS FIRST], false, 0
+                     +- Exchange hashpartitioning(o_orderkey#98, 200)
+                        +- *(3) Project [o_orderkey#98, o_orderpriority#103]
+                           +- *(3) Filter (((isnotnull(o_orderdates#102) && (o_orderdates#102 >= 1993-07-01)) && (o_orderdates#102 < 1993-10-01)) && isnotnull(o_orderkey#98))
+                              +- *(3) FileScan parquet [o_orderkey#98,o_orderdates#102,o_orderpriority#103] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderdates), GreaterThanOrEqual(o_orderdates,1993-07-01), LessThan(o_orderdates,1993..., ReadSchema: struct<o_orderkey:int,o_orderdates:string,o_orderpriority:string>

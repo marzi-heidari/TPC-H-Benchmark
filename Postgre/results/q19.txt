@@ -1,0 +1,40 @@
+
+ Finalize Aggregate  (cost=1599813.36..1599813.37 rows=1 width=32) (actual time=812
+315.249..812315.249 rows=1 loops=1)
+   ->  Gather  (cost=1599813.14..1599813.35 rows=2 width=32) (actual time=812301.19
+0..812317.703 rows=3 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         ->  Partial Aggregate  (cost=1598813.14..1598813.15 rows=1 width=32) (actu
+al time=812211.852..812211.852 rows=1 loops=3)
+               ->  Nested Loop  (cost=0.57..1598802.71 rows=1391 width=12) (actual
+time=532.928..812206.243 rows=1319 loops=3)
+                     ->  Parallel Seq Scan on part  (cost=0.00..763761.67 rows=2021
+4 width=30) (actual time=0.382..15816.052 rows=16096 loops=3)
+                           Filter: ((p_size >= 1) AND (((p_brand = 'Brand#22'::bpch
+ar) AND (p_container = ANY ('{"SM CASE","SM BOX","SM PACK","SM PKG"}'::bpchar[])) A
+ND (p_size <= 5)) OR ((p_brand = 'Brand#23'::bpchar) AND (p_container = ANY ('{"MED
+ BAG","MED BOX","MED PKG","MED PACK"}'::bpchar[])) AND (p_size <= 10)) OR ((p_brand
+ = 'Brand#12'::bpchar) AND (p_container = ANY ('{"LG CASE","LG BOX","LG PACK","LG P
+KG"}'::bpchar[])) AND (p_size <= 15))))
+                           Rows Removed by Filter: 6650571
+                     ->  Index Scan using l_partkey_idx on lineitem  (cost=0.57..41
+.30 rows=1 width=25) (actual time=49.040..49.476 rows=0 loops=48287)
+                           Index Cond: (l_partkey = part.p_partkey)
+                           Filter: ((l_shipmode = ANY ('{AIR,"AIR REG"}'::bpchar[])
+) AND (l_shipinstruct = 'DELIVER IN PERSON'::bpchar) AND (((l_quantity >= '8'::nume
+ric) AND (l_quantity <= '18'::numeric)) OR ((l_quantity >= '10'::numeric) AND (l_qu
+antity <= '20'::numeric)) OR ((l_quantity >= '24'::numeric) AND (l_quantity <= '34'
+::numeric))) AND (((part.p_brand = 'Brand#22'::bpchar) AND (part.p_container = ANY
+('{"SM CASE","SM BOX","SM PACK","SM PKG"}'::bpchar[])) AND (l_quantity >= '8'::nume
+ric) AND (l_quantity <= '18'::numeric) AND (part.p_size <= 5)) OR ((part.p_brand =
+'Brand#23'::bpchar) AND (part.p_container = ANY ('{"MED BAG","MED BOX","MED PKG","M
+ED PACK"}'::bpchar[])) AND (l_quantity >= '10'::numeric) AND (l_quantity <= '20'::n
+umeric) AND (part.p_size <= 10)) OR ((part.p_brand = 'Brand#12'::bpchar) AND (part.
+p_container = ANY ('{"LG CASE","LG BOX","LG PACK","LG PKG"}'::bpchar[])) AND (l_qua
+ntity >= '24'::numeric) AND (l_quantity <= '34'::numeric) AND (part.p_size <= 15)))
+)
+                           Rows Removed by Filter: 10
+ Planning Time: 195.484 ms
+ Execution Time: 812317.839 ms
+(15 rows)

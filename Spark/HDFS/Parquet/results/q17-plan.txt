@@ -1,0 +1,31 @@
+
+== Physical Plan ==
+*(13) HashAggregate(keys=[], functions=[sum(l_extendedprice#69)])
++- Exchange SinglePartition
+   +- *(12) HashAggregate(keys=[], functions=[partial_sum(l_extendedprice#69)])
+      +- *(12) Project [l_extendedprice#69]
+         +- *(12) SortMergeJoin [key#3748], [p_partkey#8], Inner, (l_quantity#68 < avg_quantity#3745)
+            :- *(6) Sort [key#3748 ASC NULLS FIRST], false, 0
+            :  +- Exchange hashpartitioning(key#3748, 200)
+            :     +- *(5) Filter isnotnull(avg_quantity#3745)
+            :        +- *(5) HashAggregate(keys=[p_partkey#8], functions=[avg(l_quantity#68)])
+            :           +- *(5) HashAggregate(keys=[p_partkey#8], functions=[partial_avg(l_quantity#68)])
+            :              +- *(5) Project [p_partkey#8, l_quantity#68]
+            :                 +- SortMergeJoin [p_partkey#8], [l_partkey#65], LeftOuter
+            :                    :- *(2) Sort [p_partkey#8 ASC NULLS FIRST], false, 0
+            :                    :  +- Exchange hashpartitioning(p_partkey#8, 200)
+            :                    :     +- *(1) Project [p_partkey#8]
+            :                    :        +- *(1) Filter ((((isnotnull(p_brand#11) && isnotnull(p_container#14)) && (p_brand#11 = Brand#23)) && (p_container#14 = LG CAN)) && isnotnull(p_partkey#8))
+            :                    :           +- *(1) FileScan parquet [p_partkey#8,p_brand#11,p_container#14] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/part.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(p_brand), IsNotNull(p_container), EqualTo(p_brand,Brand#23), EqualTo(p_container,LG CA..., ReadSchema: struct<p_partkey:int,p_brand:string,p_container:string>
+            :                    +- *(4) Sort [l_partkey#65 ASC NULLS FIRST], false, 0
+            :                       +- Exchange hashpartitioning(l_partkey#65, 200)
+            :                          +- *(3) FileScan parquet [l_partkey#65,l_quantity#68] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.parquet], PartitionFilters: [], PushedFilters: [], ReadSchema: struct<l_partkey:int,l_quantity:double>
+            +- *(11) Project [p_partkey#8, l_quantity#68, l_extendedprice#69]
+               +- *(11) SortMergeJoin [p_partkey#8], [l_partkey#65], Inner
+                  :- *(8) Sort [p_partkey#8 ASC NULLS FIRST], false, 0
+                  :  +- ReusedExchange [p_partkey#8], Exchange hashpartitioning(p_partkey#8, 200)
+                  +- *(10) Sort [l_partkey#65 ASC NULLS FIRST], false, 0
+                     +- Exchange hashpartitioning(l_partkey#65, 200)
+                        +- *(9) Project [l_partkey#65, l_quantity#68, l_extendedprice#69]
+                           +- *(9) Filter isnotnull(l_quantity#68)
+                              +- *(9) FileScan parquet [l_partkey#65,l_quantity#68,l_extendedprice#69] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(l_quantity)], ReadSchema: struct<l_partkey:int,l_quantity:double,l_extendedprice:double>

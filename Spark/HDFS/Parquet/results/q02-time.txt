@@ -1,0 +1,29 @@
+
++---------+------------------+--------------------+---------+--------------+--------------------+---------------+--------------------+
+|s_acctbal|            s_name|              n_name|p_partkey|        p_mfgr|           s_address|        s_phone|           s_comment|
++---------+------------------+--------------------+---------+--------------+--------------------+---------------+--------------------+
+|  9999.95|Supplier#000391983|IRAN             ...|   891982|Manufacturer#5|jdsJsVH MCF1ctbwd...|20-217-934-6078|ly thin theodolit...|
+|  9999.77|Supplier#000890010|IRAN             ...| 16389977|Manufacturer#4|7vtLpxlhf5ghAhImq...|20-435-227-9282|along the pending...|
+|  9999.73|Supplier#000876265|JORDAN           ...|  8626256|Manufacturer#4|sN,SDl jg9cjA2p5x...|23-919-420-4533|lyly blithe accou...|
+|  9999.58|Supplier#000081596|JORDAN           ...|  3081595|Manufacturer#3|31fNONxr5dJA00d6C...|23-802-625-7039|to the furiously ...|
+|  9999.52|Supplier#000264342|IRAN             ...|  5764331|Manufacturer#2|2wY3ZgEBb2WEohQYJ...|20-813-829-9077|e ironic, unusual...|
+|  9999.21|Supplier#000081559|IRAQ             ...|  7831551|Manufacturer#5|YplAwJxhoHNeIyqDv...|21-345-604-7861|bold packages caj...|
+|  9999.16|Supplier#000711444|EGYPT            ...|  5961428|Manufacturer#4|      BBPVI4w2cN7uM |14-766-379-2554|after the careful...|
+|  9998.86|Supplier#000604256|EGYPT            ...|  2854249|Manufacturer#3|    awQPnGfeeP3dQZ2F|14-401-948-3458|refully regular i...|
+|  9998.77|Supplier#000906071|IRAQ             ...|  8156046|Manufacturer#3|sPN3u8sAmR6AX1A2g...|21-318-508-2799|ar requests subla...|
+|  9998.72|Supplier#000458163|SAUDI ARABIA     ...|   208162|Manufacturer#3|gP414HqOnR45A, 2B...|30-603-958-7099|the furiously iro...|
+|  9998.72|Supplier#000458163|SAUDI ARABIA     ...|  8458162|Manufacturer#2|gP414HqOnR45A, 2B...|30-603-958-7099|the furiously iro...|
+|   9998.4|Supplier#000583103|SAUDI ARABIA     ...|  6583102|Manufacturer#5|       ,yTuEdwFjIicH|30-338-847-8641|l requests! slyly...|
+|   9998.2|Supplier#000543036|EGYPT            ...|  6793017|Manufacturer#3|a0tk3j2gcLaGa7xrc...|14-543-718-9955|ions affix blithe...|
+|  9998.19|Supplier#000720707|IRAQ             ...|  8720706|Manufacturer#3|zFCojOMkoBxjwTYNV...|21-835-177-5339|unusual instructi...|
+|  9998.14|Supplier#000143217|SAUDI ARABIA     ...| 19393159|Manufacturer#5|uwel3PEJkW7dBC0Xz...|30-898-709-1113|quests cajole sly...|
+|  9997.83|Supplier#000086862|EGYPT            ...| 16836845|Manufacturer#4|x7fXJ88ZAc704u7jV...|14-507-112-4463| beans haggle clo...|
+|  9997.35|Supplier#000031340|IRAN             ...| 13281300|Manufacturer#3|     OXcLAf,LolJ HDq|20-432-827-9234|even foxes cajole...|
+|  9997.35|Supplier#000031340|IRAN             ...| 16281291|Manufacturer#3|     OXcLAf,LolJ HDq|20-432-827-9234|even foxes cajole...|
+|  9997.35|Supplier#000031340|IRAN             ...| 18781321|Manufacturer#2|     OXcLAf,LolJ HDq|20-432-827-9234|even foxes cajole...|
+|  9997.11|Supplier#000943131|IRAQ             ...| 18943130|Manufacturer#1|LjlSp1kPXh9PNdVko...|21-357-276-1041|c, even accounts....|
++---------+------------------+--------------------+---------+--------------+--------------------+---------------+--------------------+
+only showing top 20 rows
+
+0.018421999999999994
+

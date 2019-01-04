@@ -1,0 +1,62 @@
+== Physical Plan ==
+TakeOrderedAndProject(limit=100, orderBy=[numwait#447L DESC NULLS LAST,s_name#41 ASC NULLS FIRST], output=[s_name#41,numwait#447L])
++- *(22) HashAggregate(keys=[s_name#41], functions=[count(l_suppkey#66)])
+   +- Exchange hashpartitioning(s_name#41, 200)
+      +- *(21) HashAggregate(keys=[s_name#41], functions=[partial_count(l_suppkey#66)])
+         +- *(21) Project [s_name#41, l_suppkey#66]
+            +- *(21) SortMergeJoin [l_suppkey#66, l_orderkey#64], [suppkey_max#166, key#170], Inner
+               :- *(16) Sort [l_suppkey#66 ASC NULLS FIRST, l_orderkey#64 ASC NULLS FIRST], false, 0
+               :  +- Exchange hashpartitioning(l_suppkey#66, l_orderkey#64, 200)
+               :     +- *(15) Project [s_name#41, l_orderkey#64, l_suppkey#66]
+               :        +- *(15) SortMergeJoin [l_orderkey#64], [key#155], Inner, ((suppkey_count#149L > 1) || ((suppkey_count#149L = 1) && (l_suppkey#66 = suppkey_max#151)))
+               :           :- *(10) Project [s_name#41, l_suppkey#66, l_orderkey#64]
+               :           :  +- *(10) SortMergeJoin [l_orderkey#64], [o_orderkey#98], Inner
+               :           :     :- *(7) Sort [l_orderkey#64 ASC NULLS FIRST], false, 0
+               :           :     :  +- Exchange hashpartitioning(l_orderkey#64, 200)
+               :           :     :     +- *(6) Project [s_name#41, l_suppkey#66, l_orderkey#64]
+               :           :     :        +- *(6) SortMergeJoin [s_suppkey#40], [l_suppkey#66], Inner
+               :           :     :           :- *(3) Sort [s_suppkey#40 ASC NULLS FIRST], false, 0
+               :           :     :           :  +- Exchange hashpartitioning(s_suppkey#40, 200)
+               :           :     :           :     +- *(2) Project [s_suppkey#40, s_name#41]
+               :           :     :           :        +- *(2) BroadcastHashJoin [n_nationkey#56], [s_nationkey#43], Inner, BuildLeft
+               :           :     :           :           :- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[0, int, true] as bigint)))
+               :           :     :           :           :  +- *(1) Project [n_nationkey#56]
+               :           :     :           :           :     +- *(1) Filter ((isnotnull(n_name#57) && StartsWith(n_name#57, GERMANY)) && isnotnull(n_nationkey#56))
+               :           :     :           :           :        +- *(1) FileScan parquet [n_nationkey#56,n_name#57] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/nation.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(n_name), StringStartsWith(n_name,GERMANY), IsNotNull(n_nationkey)], ReadSchema: struct<n_nationkey:int,n_name:string>
+               :           :     :           :           +- *(2) Project [s_suppkey#40, s_nationkey#43, s_name#41]
+               :           :     :           :              +- *(2) Filter (isnotnull(s_nationkey#43) && isnotnull(s_suppkey#40))
+               :           :     :           :                 +- *(2) FileScan parquet [s_suppkey#40,s_name#41,s_nationkey#43] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/supplier.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(s_nationkey), IsNotNull(s_suppkey)], ReadSchema: struct<s_suppkey:int,s_name:string,s_nationkey:int>
+               :           :     :           +- *(5) Sort [l_suppkey#66 ASC NULLS FIRST], false, 0
+               :           :     :              +- Exchange hashpartitioning(l_suppkey#66, 200)
+               :           :     :                 +- *(4) Project [l_suppkey#66, l_orderkey#64]
+               :           :     :                    +- *(4) Filter ((((isnotnull(l_receiptdate#76) && isnotnull(l_commitdate#75)) && (l_receiptdate#76 > l_commitdate#75)) && isnotnull(l_suppkey#66)) && isnotnull(l_orderkey#64))
+               :           :     :                       +- *(4) FileScan parquet [l_orderkey#64,l_suppkey#66,l_commitdate#75,l_receiptdate#76] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(l_receiptdate), IsNotNull(l_commitdate), IsNotNull(l_suppkey), IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_suppkey:int,l_commitdate:string,l_receiptdate:string>
+               :           :     +- *(9) Sort [o_orderkey#98 ASC NULLS FIRST], false, 0
+               :           :        +- Exchange hashpartitioning(o_orderkey#98, 200)
+               :           :           +- *(8) Project [o_orderkey#98]
+               :           :              +- *(8) Filter ((isnotnull(o_orderstatus#100) && (o_orderstatus#100 = F)) && isnotnull(o_orderkey#98))
+               :           :                 +- *(8) FileScan parquet [o_orderkey#98,o_orderstatus#100] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderstatus), EqualTo(o_orderstatus,F), IsNotNull(o_orderkey)], ReadSchema: struct<o_orderkey:int,o_orderstatus:string>
+               :           +- *(14) Sort [key#155 ASC NULLS FIRST], false, 0
+               :              +- Exchange hashpartitioning(key#155, 200)
+               :                 +- *(13) HashAggregate(keys=[l_orderkey#64], functions=[max(l_suppkey#66), count(distinct l_suppkey#66)])
+               :                    +- Exchange hashpartitioning(l_orderkey#64, 200)
+               :                       +- *(12) HashAggregate(keys=[l_orderkey#64], functions=[merge_max(l_suppkey#66), partial_count(distinct l_suppkey#66)])
+               :                          +- *(12) HashAggregate(keys=[l_orderkey#64, l_suppkey#66], functions=[merge_max(l_suppkey#66)])
+               :                             +- Exchange hashpartitioning(l_orderkey#64, l_suppkey#66, 200)
+               :                                +- *(11) HashAggregate(keys=[l_orderkey#64, l_suppkey#66], functions=[partial_max(l_suppkey#66)])
+               :                                   +- *(11) Project [l_suppkey#66, l_orderkey#64]
+               :                                      +- *(11) Filter isnotnull(l_orderkey#64)
+               :                                         +- *(11) FileScan parquet [l_orderkey#64,l_suppkey#66] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_suppkey:int>
+               +- *(20) Sort [suppkey_max#166 ASC NULLS FIRST, key#170 ASC NULLS FIRST], false, 0
+                  +- Exchange hashpartitioning(suppkey_max#166, key#170, 200)
+                     +- *(19) Project [key#170, suppkey_max#166]
+                        +- *(19) Filter ((suppkey_count#164L = 1) && isnotnull(suppkey_max#166))
+                           +- *(19) HashAggregate(keys=[l_orderkey#64], functions=[max(l_suppkey#66), count(distinct l_suppkey#66)])
+                              +- Exchange hashpartitioning(l_orderkey#64, 200)
+                                 +- *(18) HashAggregate(keys=[l_orderkey#64], functions=[merge_max(l_suppkey#66), partial_count(distinct l_suppkey#66)])
+                                    +- *(18) HashAggregate(keys=[l_orderkey#64, l_suppkey#66], functions=[merge_max(l_suppkey#66)])
+                                       +- Exchange hashpartitioning(l_orderkey#64, l_suppkey#66, 200)
+                                          +- *(17) HashAggregate(keys=[l_orderkey#64, l_suppkey#66], functions=[partial_max(l_suppkey#66)])
+                                             +- *(17) Project [l_suppkey#66, l_orderkey#64]
+                                                +- *(17) Filter (((isnotnull(l_receiptdate#76) && isnotnull(l_commitdate#75)) && (l_receiptdate#76 > l_commitdate#75)) && isnotnull(l_orderkey#64))
+                                                   +- *(17) FileScan parquet [l_orderkey#64,l_suppkey#66,l_commitdate#75,l_receiptdate#76] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(l_receiptdate), IsNotNull(l_commitdate), IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_suppkey:int,l_commitdate:string,l_receiptdate:string>

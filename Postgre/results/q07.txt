@@ -1,0 +1,67 @@
+
+                                                                            QUERY PLAN
+
+------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------
+ GroupAggregate  (cost=17717237.40..17721111.80 rows=10032 width=248) (actual rows=4 loops=1)
+   Group Key: n1.n_name, n2.n_name, (date_part('year'::text, (lineitem.l_shipdate)::timestamp without time zone))
+   ->  Sort  (cost=17717237.40..17717765.81 rows=211362 width=228) (actual rows=203259 loops=1)
+         Sort Key: n1.n_name, n2.n_name, (date_part('year'::text, (lineitem.l_shipdate)::timestamp without time zone))
+         Sort Method: external merge  Disk: 17440kB
+         ->  Hash Join  (cost=12955751.03..17675422.11 rows=211362 width=228) (actual rows=203259 loops=1)
+               Hash Cond: (orders.o_custkey = customer.c_custkey)
+               Join Filter: (((n1.n_name = 'ROMANIA'::bpchar) AND (n2.n_name = 'INDIA'::bpchar)) OR ((n1.n_name = 'INDIA
+'::bpchar) AND (n2.n_name = 'ROMANIA'::bpchar)))
+               Rows Removed by Join Filter: 203703
+               ->  Merge Join  (cost=12355544.63..16838590.93 rows=5078874 width=128) (actual rows=5082096 loops=1)
+                     Merge Cond: (orders.o_orderkey = lineitem.l_orderkey)
+                     ->  Index Scan using orders_pkey on orders  (cost=0.57..12434469.79 rows=150000000 width=12) (actua
+l rows=52143406 loops=1)
+                     ->  Materialize  (cost=12355531.81..12380926.18 rows=5078874 width=128) (actual rows=5082096 loops=
+1)
+                           ->  Sort  (cost=12355531.81..12368228.99 rows=5078874 width=128) (actual rows=5082096 loops=1
+)
+                                 Sort Key: lineitem.l_orderkey
+                                 Sort Method: external merge  Disk: 328320kB
+                                 ->  Gather  (cost=30352.90..11130185.86 rows=5078874 width=128) (actual rows=5082096 lo
+ops=1)
+                                       Workers Planned: 2
+                                       Workers Launched: 2
+                                       ->  Parallel Hash Join  (cost=29352.90..10621298.46 rows=2116198 width=128) (actu
+al rows=1694032 loops=3)
+                                             Hash Cond: (lineitem.l_suppkey = supplier.s_suppkey)
+                                             ->  Parallel Seq Scan on lineitem  (cost=0.00..10121721.40 rows=26452469 wi
+dth=32) (actual rows=21124402 loops=3)
+                                                   Filter: ((l_shipdate >= '1995-01-01'::date) AND (l_shipdate <= '1996-
+12-31'::date))
+                                                   Rows Removed by Filter: 48402763
+                                             ->  Parallel Hash  (cost=28382.24..28382.24 rows=33333 width=108) (actual r
+ows=26746 loops=3)
+                                                   Buckets: 32768  Batches: 4  Memory Usage: 1568kB
+                                                   ->  Hash Join  (cost=1.40..28382.24 rows=33333 width=108) (actual row
+s=26746 loops=3)
+                                                         Hash Cond: (supplier.s_nationkey = n1.n_nationkey)
+                                                         ->  Parallel Seq Scan on supplier  (cost=0.00..27101.67 rows=41
+6667 width=12) (actual rows=333333 loops=3)
+                                                         ->  Hash  (cost=1.38..1.38 rows=2 width=108) (actual rows=2 loo
+ps=3)
+                                                               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                                               ->  Seq Scan on nation n1  (cost=0.00..1.38 rows=2 width=
+108) (actual rows=2 loops=3)
+                                                                     Filter: ((n_name = 'ROMANIA'::bpchar) OR (n_name =
+'INDIA'::bpchar))
+                                                                     Rows Removed by Filter: 23
+               ->  Hash  (cost=565284.40..565284.40 rows=1200000 width=108) (actual rows=1199704 loops=1)
+                     Buckets: 32768  Batches: 64  Memory Usage: 1401kB
+                     ->  Hash Join  (cost=1.40..565284.40 rows=1200000 width=108) (actual rows=1199704 loops=1)
+                           Hash Cond: (customer.c_nationkey = n2.n_nationkey)
+                           ->  Seq Scan on customer  (cost=0.00..519233.00 rows=15000000 width=12) (actual rows=15000000
+ loops=1)
+                           ->  Hash  (cost=1.38..1.38 rows=2 width=108) (actual rows=2 loops=1)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                 ->  Seq Scan on nation n2  (cost=0.00..1.38 rows=2 width=108) (actual rows=2 loops=1)
+                                       Filter: ((n_name = 'INDIA'::bpchar) OR (n_name = 'ROMANIA'::bpchar))
+                                       Rows Removed by Filter: 23
+ Planning Time: 1093.508 ms
+ Execution Time: 1424709.480 ms
+(46 rows)

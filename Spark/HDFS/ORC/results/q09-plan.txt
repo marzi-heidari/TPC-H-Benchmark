@@ -1,0 +1,55 @@
+
+== Physical Plan ==
+*(21) Sort [n_name#2177 ASC NULLS FIRST, o_year#2791 DESC NULLS LAST], true, 0
++- Exchange rangepartitioning(n_name#2177 ASC NULLS FIRST, o_year#2791 DESC NULLS LAST, 200)
+   +- *(20) HashAggregate(keys=[n_name#2177, o_year#2791], functions=[sum(cast(amount#2792 as bigint))])
+      +- Exchange hashpartitioning(n_name#2177, o_year#2791, 200)
+         +- *(19) HashAggregate(keys=[n_name#2177, o_year#2791], functions=[partial_sum(cast(amount#2792 as bigint))])
+            +- *(19) Project [n_name#2177, pythonUDF0#2820 AS o_year#2791, pythonUDF1#2821 AS amount#2792]
+               +- BatchEvalPython [<lambda>(o_orderdates#2188), <lambda>(l_extendedprice#2209, l_discount#2210, ps_supplycost#2151, l_quantity#2208)], [l_discount#2210, l_extendedprice#2209, l_quantity#2208, n_name#2177, o_orderdates#2188, ps_supplycost#2151, pythonUDF0#2820, pythonUDF1#2821]
+                  +- *(18) Project [l_discount#2210, l_extendedprice#2209, l_quantity#2208, n_name#2177, o_orderdates#2188, ps_supplycost#2151]
+                     +- *(18) SortMergeJoin [l_orderkey#2204], [o_orderkey#2184], Inner
+                        :- *(15) Sort [l_orderkey#2204 ASC NULLS FIRST], false, 0
+                        :  +- Exchange hashpartitioning(l_orderkey#2204, 200)
+                        :     +- *(14) Project [l_orderkey#2204, l_quantity#2208, l_extendedprice#2209, l_discount#2210, n_name#2177, ps_supplycost#2151]
+                        :        +- *(14) SortMergeJoin [l_suppkey#2206, l_partkey#2205], [ps_suppkey#2149, ps_partkey#2148], Inner
+                        :           :- *(11) Sort [l_suppkey#2206 ASC NULLS FIRST, l_partkey#2205 ASC NULLS FIRST], false, 0
+                        :           :  +- Exchange hashpartitioning(l_suppkey#2206, l_partkey#2205, 200)
+                        :           :     +- *(10) Project [l_orderkey#2204, l_partkey#2205, l_suppkey#2206, l_quantity#2208, l_extendedprice#2209, l_discount#2210, n_name#2177]
+                        :           :        +- *(10) SortMergeJoin [l_suppkey#2206], [s_suppkey#2160], Inner
+                        :           :           :- *(6) Sort [l_suppkey#2206 ASC NULLS FIRST], false, 0
+                        :           :           :  +- Exchange hashpartitioning(l_suppkey#2206, 200)
+                        :           :           :     +- *(5) Project [l_orderkey#2204, l_partkey#2205, l_suppkey#2206, l_quantity#2208, l_extendedprice#2209, l_discount#2210]
+                        :           :           :        +- *(5) SortMergeJoin [p_partkey#2128], [l_partkey#2205], Inner
+                        :           :           :           :- *(2) Sort [p_partkey#2128 ASC NULLS FIRST], false, 0
+                        :           :           :           :  +- Exchange hashpartitioning(p_partkey#2128, 200)
+                        :           :           :           :     +- *(1) Project [p_partkey#2128]
+                        :           :           :           :        +- *(1) Filter ((isnotnull(p_name#2129) && Contains(p_name#2129, yellow)) && isnotnull(p_partkey#2128))
+                        :           :           :           :           +- *(1) FileScan orc [p_partkey#2128,p_name#2129] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/part.orc], PartitionFilters: [], PushedFilters: [IsNotNull(p_name), StringContains(p_name,yellow), IsNotNull(p_partkey)], ReadSchema: struct<p_partkey:int,p_name:string>
+                        :           :           :           +- *(4) Sort [l_partkey#2205 ASC NULLS FIRST], false, 0
+                        :           :           :              +- Exchange hashpartitioning(l_partkey#2205, 200)
+                        :           :           :                 +- *(3) Project [l_orderkey#2204, l_partkey#2205, l_suppkey#2206, l_quantity#2208, l_extendedprice#2209, l_discount#2210]
+                        :           :           :                    +- *(3) Filter ((isnotnull(l_partkey#2205) && isnotnull(l_suppkey#2206)) && isnotnull(l_orderkey#2204))
+                        :           :           :                       +- *(3) FileScan orc [l_orderkey#2204,l_partkey#2205,l_suppkey#2206,l_quantity#2208,l_extendedprice#2209,l_discount#2210] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_partkey), IsNotNull(l_suppkey), IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_partkey:int,l_suppkey:int,l_quantity:double,l_extendedprice:double,l_disc...
+                        :           :           +- *(9) Sort [s_suppkey#2160 ASC NULLS FIRST], false, 0
+                        :           :              +- Exchange hashpartitioning(s_suppkey#2160, 200)
+                        :           :                 +- *(8) Project [n_name#2177, s_suppkey#2160]
+                        :           :                    +- *(8) BroadcastHashJoin [n_nationkey#2176], [s_nationkey#2163], Inner, BuildLeft
+                        :           :                       :- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[0, int, true] as bigint)))
+                        :           :                       :  +- *(7) Project [n_nationkey#2176, n_name#2177]
+                        :           :                       :     +- *(7) Filter isnotnull(n_nationkey#2176)
+                        :           :                       :        +- *(7) FileScan orc [n_nationkey#2176,n_name#2177] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/nation.orc], PartitionFilters: [], PushedFilters: [IsNotNull(n_nationkey)], ReadSchema: struct<n_nationkey:int,n_name:string>
+                        :           :                       +- *(8) Project [s_suppkey#2160, s_nationkey#2163]
+                        :           :                          +- *(8) Filter (isnotnull(s_nationkey#2163) && isnotnull(s_suppkey#2160))
+                        :           :                             +- *(8) FileScan orc [s_suppkey#2160,s_nationkey#2163] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/supplier.orc], PartitionFilters: [], PushedFilters: [IsNotNull(s_nationkey), IsNotNull(s_suppkey)], ReadSchema: struct<s_suppkey:int,s_nationkey:int>
+                        :           +- *(13) Sort [ps_suppkey#2149 ASC NULLS FIRST, ps_partkey#2148 ASC NULLS FIRST], false, 0
+                        :              +- Exchange hashpartitioning(ps_suppkey#2149, ps_partkey#2148, 200)
+                        :                 +- *(12) Project [ps_partkey#2148, ps_suppkey#2149, ps_supplycost#2151]
+                        :                    +- *(12) Filter (isnotnull(ps_suppkey#2149) && isnotnull(ps_partkey#2148))
+                        :                       +- *(12) FileScan orc [ps_partkey#2148,ps_suppkey#2149,ps_supplycost#2151] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/partsupp.orc], PartitionFilters: [], PushedFilters: [IsNotNull(ps_suppkey), IsNotNull(ps_partkey)], ReadSchema: struct<ps_partkey:int,ps_suppkey:int,ps_supplycost:double>
+                        +- *(17) Sort [o_orderkey#2184 ASC NULLS FIRST], false, 0
+                           +- Exchange hashpartitioning(o_orderkey#2184, 200)
+                              +- *(16) Project [o_orderkey#2184, o_orderdates#2188]
+                                 +- *(16) Filter isnotnull(o_orderkey#2184)
+                                    +- *(16) FileScan orc [o_orderkey#2184,o_orderdates#2188] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.orc], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderkey)], ReadSchema: struct<o_orderkey:int,o_orderdates:string>
+

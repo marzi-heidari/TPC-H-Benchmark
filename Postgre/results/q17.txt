@@ -1,0 +1,31 @@
+                                                                     QUERY
+PLAN
+-----------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+ Aggregate  (cost=8448175.86..8448175.87 rows=1 width=32) (actual time=1515264.473.
+.1515264.473 rows=1 loops=1)
+   ->  Nested Loop  (cost=1000.57..8448031.85 rows=57601 width=8) (actual time=1378
+.332..1515253.402 rows=17737 loops=1)
+         ->  Gather  (cost=1000.00..537535.50 rows=19405 width=4) (actual time=0.57
+6..22.681 rows=20147 loops=1)
+               Workers Planned: 2
+               Workers Launched: 1
+               ->  Parallel Seq Scan on part  (cost=0.00..534595.00 rows=8085 width
+=4) (actual time=0.899..39752.434 rows=10074 loops=2)
+                     Filter: ((p_brand = 'Brand#52'::bpchar) AND (p_container = 'LG
+ CAN'::bpchar))
+                     Rows Removed by Filter: 9989926
+         ->  Index Scan using l_partkey_idx on lineitem  (cost=0.57..407.62 rows=3
+width=21) (actual time=75.136..75.207 rows=1 loops=20147)
+               Index Cond: (l_partkey = part.p_partkey)
+               Filter: (l_quantity < (SubPlan 1))
+               Rows Removed by Filter: 10
+               SubPlan 1
+                 ->  Aggregate  (cost=40.75..40.76 rows=1 width=32) (actual time=5.
+526..5.526 rows=1 loops=210611)
+                       ->  Index Scan using l_partkey_idx on lineitem lineitem_1  (
+cost=0.57..40.73 rows=9 width=5) (actual time=0.006..5.519 rows=11 loops=210611)
+                             Index Cond: (l_partkey = part.p_partkey)
+ Planning Time: 1107.789 ms
+ Execution Time: 1515264.874 ms
+(18 rows)

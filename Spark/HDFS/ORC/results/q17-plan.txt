@@ -1,0 +1,88 @@
+
+== Parsed Logical Plan ==
+'Aggregate [(sum('l_extendedprice) / 7.0) AS (sum(l_extendedprice) / 7.0)#221]
++- Filter (l_quantity#8 < avg_quantity#133)
+   +- Join Inner, (key#136 = p_partkey#38)
+      :- Project [p_partkey#38 AS key#136, avg_quantity#133]
+      :  +- Aggregate [p_partkey#38], [p_partkey#38, if (isnull(avg(l_quantity#8))) null else if (isnull(avg(l_quantity#8))) null else UDF(avg(l_quantity#8)) AS avg_quantity#133]
+      :     +- Join LeftOuter, (p_partkey#38 = l_partkey#5)
+      :        :- Project [p_partkey#38]
+      :        :  +- Filter ((p_brand#41 = Brand#23) && (p_container#44 = LG CAN))
+      :        :     +- Relation[p_partkey#38,p_name#39,p_mfgr#40,p_brand#41,p_type#42,p_size#43,p_container#44,p_retailprice#45,p_comment#46,p_dummy#47] orc
+      :        +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
+      +- Join LeftOuter, (p_partkey#38 = l_partkey#5)
+         :- Project [p_partkey#38]
+         :  +- Filter ((p_brand#41 = Brand#23) && (p_container#44 = LG CAN))
+         :     +- Relation[p_partkey#38,p_name#39,p_mfgr#40,p_brand#41,p_type#42,p_size#43,p_container#44,p_retailprice#45,p_comment#46,p_dummy#47] orc
+         +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
+
+== Analyzed Logical Plan ==
+(sum(l_extendedprice) / 7.0): double
+Aggregate [(sum(l_extendedprice#9) / 7.0) AS (sum(l_extendedprice) / 7.0)#221]
++- Filter (l_quantity#8 < avg_quantity#133)
+   +- Join Inner, (key#136 = p_partkey#38)
+      :- Project [p_partkey#38 AS key#136, avg_quantity#133]
+      :  +- Aggregate [p_partkey#38], [p_partkey#38, if (isnull(avg(l_quantity#8))) null else if (isnull(avg(l_quantity#8))) null else if (isnull(avg(l_quantity#8))) null else UDF(avg(l_quantity#8)) AS avg_quantity#133]
+      :     +- Join LeftOuter, (p_partkey#38 = l_partkey#5)
+      :        :- Project [p_partkey#38]
+      :        :  +- Filter ((p_brand#41 = Brand#23) && (p_container#44 = LG CAN))
+      :        :     +- Relation[p_partkey#38,p_name#39,p_mfgr#40,p_brand#41,p_type#42,p_size#43,p_container#44,p_retailprice#45,p_comment#46,p_dummy#47] orc
+      :        +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
+      +- Join LeftOuter, (p_partkey#38 = l_partkey#5)
+         :- Project [p_partkey#38]
+         :  +- Filter ((p_brand#41 = Brand#23) && (p_container#44 = LG CAN))
+         :     +- Relation[p_partkey#38,p_name#39,p_mfgr#40,p_brand#41,p_type#42,p_size#43,p_container#44,p_retailprice#45,p_comment#46,p_dummy#47] orc
+         +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
+
+== Optimized Logical Plan ==
+Aggregate [(sum(l_extendedprice#9) / 7.0) AS (sum(l_extendedprice) / 7.0)#221]
++- Project [l_extendedprice#9]
+   +- Join Inner, ((l_quantity#8 < avg_quantity#133) && (key#136 = p_partkey#38))
+      :- Filter isnotnull(avg_quantity#133)
+      :  +- Aggregate [p_partkey#38], [p_partkey#38 AS key#136, if (isnull(avg(l_quantity#8))) null else if (isnull(avg(l_quantity#8))) null else if (isnull(avg(l_quantity#8))) null else UDF(avg(l_quantity#8)) AS avg_quantity#133]
+      :     +- Project [p_partkey#38, l_quantity#8]
+      :        +- Join LeftOuter, (p_partkey#38 = l_partkey#5)
+      :           :- Project [p_partkey#38]
+      :           :  +- Filter ((((isnotnull(p_brand#41) && isnotnull(p_container#44)) && (p_brand#41 = Brand#23)) && (p_container#44 = LG CAN)) && isnotnull(p_partkey#38))
+      :           :     +- Relation[p_partkey#38,p_name#39,p_mfgr#40,p_brand#41,p_type#42,p_size#43,p_container#44,p_retailprice#45,p_comment#46,p_dummy#47] orc
+      :           +- Project [l_partkey#5, l_quantity#8]
+      :              +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
+      +- Project [p_partkey#38, l_quantity#8, l_extendedprice#9]
+         +- Join Inner, (p_partkey#38 = l_partkey#5)
+            :- Project [p_partkey#38]
+            :  +- Filter ((((isnotnull(p_brand#41) && isnotnull(p_container#44)) && (p_brand#41 = Brand#23)) && (p_container#44 = LG CAN)) && isnotnull(p_partkey#38))
+            :     +- Relation[p_partkey#38,p_name#39,p_mfgr#40,p_brand#41,p_type#42,p_size#43,p_container#44,p_retailprice#45,p_comment#46,p_dummy#47] orc
+            +- Project [l_partkey#5, l_quantity#8, l_extendedprice#9]
+               +- Filter isnotnull(l_quantity#8)
+                  +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
+
+== Physical Plan ==
+*(13) HashAggregate(keys=[], functions=[sum(l_extendedprice#9)], output=[(sum(l_extendedprice) / 7.0)#221])
++- Exchange SinglePartition
+   +- *(12) HashAggregate(keys=[], functions=[partial_sum(l_extendedprice#9)], output=[sum#236])
+      +- *(12) Project [l_extendedprice#9]
+         +- *(12) SortMergeJoin [key#136], [p_partkey#38], Inner, (l_quantity#8 < avg_quantity#133)
+            :- *(6) Sort [key#136 ASC NULLS FIRST], false, 0
+            :  +- Exchange hashpartitioning(key#136, 200)
+            :     +- *(5) Filter isnotnull(avg_quantity#133)
+            :        +- *(5) HashAggregate(keys=[p_partkey#38], functions=[avg(l_quantity#8)], output=[key#136, avg_quantity#133])
+            :           +- *(5) HashAggregate(keys=[p_partkey#38], functions=[partial_avg(l_quantity#8)], output=[p_partkey#38, sum#231, count#232L])
+            :              +- *(5) Project [p_partkey#38, l_quantity#8]
+            :                 +- SortMergeJoin [p_partkey#38], [l_partkey#5], LeftOuter
+            :                    :- *(2) Sort [p_partkey#38 ASC NULLS FIRST], false, 0
+            :                    :  +- Exchange hashpartitioning(p_partkey#38, 200)
+            :                    :     +- *(1) Project [p_partkey#38]
+            :                    :        +- *(1) Filter ((((isnotnull(p_brand#41) && isnotnull(p_container#44)) && (p_brand#41 = Brand#23)) && (p_container#44 = LG CAN)) && isnotnull(p_partkey#38))
+            :                    :           +- *(1) FileScan orc [p_partkey#38,p_brand#41,p_container#44] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/part.orc], PartitionFilters: [], PushedFilters: [IsNotNull(p_brand), IsNotNull(p_container), EqualTo(p_brand,Brand#23), EqualTo(p_container,LG CA..., ReadSchema: struct<p_partkey:int,p_brand:string,p_container:string>
+            :                    +- *(4) Sort [l_partkey#5 ASC NULLS FIRST], false, 0
+            :                       +- Exchange hashpartitioning(l_partkey#5, 200)
+            :                          +- *(3) FileScan orc [l_partkey#5,l_quantity#8] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [], ReadSchema: struct<l_partkey:int,l_quantity:double>
+            +- *(11) Project [p_partkey#38, l_quantity#8, l_extendedprice#9]
+               +- *(11) SortMergeJoin [p_partkey#38], [l_partkey#5], Inner
+                  :- *(8) Sort [p_partkey#38 ASC NULLS FIRST], false, 0
+                  :  +- ReusedExchange [p_partkey#38], Exchange hashpartitioning(p_partkey#38, 200)
+                  +- *(10) Sort [l_partkey#5 ASC NULLS FIRST], false, 0
+                     +- Exchange hashpartitioning(l_partkey#5, 200)
+                        +- *(9) Project [l_partkey#5, l_quantity#8, l_extendedprice#9]
+                           +- *(9) Filter isnotnull(l_quantity#8)
+                              +- *(9) FileScan orc [l_partkey#5,l_quantity#8,l_extendedprice#9] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_quantity)], ReadSchema: struct<l_partkey:int,l_quantity:double,l_extendedprice:double>

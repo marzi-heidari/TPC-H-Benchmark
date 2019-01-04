@@ -1,0 +1,8 @@
+
+== Physical Plan ==
+*(2) HashAggregate(keys=[], functions=[sum((l_extendedprice#69 * l_discount#70))])
++- Exchange SinglePartition
+   +- *(1) HashAggregate(keys=[], functions=[partial_sum((l_extendedprice#69 * l_discount#70))])
+      +- *(1) Project [l_extendedprice#69, l_discount#70]
+         +- *(1) Filter (((((((isnotnull(l_shipdate#74) && isnotnull(l_discount#70)) && isnotnull(l_quantity#68)) && (l_shipdate#74 >= 1994-01-01)) && (l_shipdate#74 < 1995-01-01)) && (l_discount#70 >= 0.07)) && (l_discount#70 <= 0.09)) && (l_quantity#68 < 24.0))
+            +- *(1) FileScan parquet [l_quantity#68,l_extendedprice#69,l_discount#70,l_shipdate#74] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(l_shipdate), IsNotNull(l_discount), IsNotNull(l_quantity), GreaterThanOrEqual(l_shipda..., ReadSchema: struct<l_quantity:double,l_extendedprice:double,l_discount:double,l_shipdate:string>

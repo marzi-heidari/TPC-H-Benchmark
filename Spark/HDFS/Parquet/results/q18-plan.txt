@@ -1,0 +1,38 @@
+
+== Physical Plan ==
+TakeOrderedAndProject(limit=100, orderBy=[o_totalprice#101 DESC NULLS LAST,o_orderdates#102 ASC NULLS FIRST], output=[c_name#119,c_custkey#118,o_orderkey#98,o_orderdates#102,o_totalprice#101,sum(l_quantity)#4127])
++- *(13) HashAggregate(keys=[c_name#119, c_custkey#118, o_orderkey#98, o_orderdates#102, o_totalprice#101], functions=[sum(l_quantity#68)])
+   +- *(13) HashAggregate(keys=[c_name#119, c_custkey#118, o_orderkey#98, o_orderdates#102, o_totalprice#101], functions=[partial_sum(l_quantity#68)])
+      +- *(13) Project [l_quantity#68, c_name#119, c_custkey#118, o_orderkey#98, o_orderdates#102, o_totalprice#101]
+         +- *(13) SortMergeJoin [o_custkey#99], [c_custkey#118], Inner
+            :- *(10) Sort [o_custkey#99 ASC NULLS FIRST], false, 0
+            :  +- Exchange hashpartitioning(o_custkey#99, 200)
+            :     +- *(9) Project [o_orderkey#98, o_custkey#99, o_totalprice#101, o_orderdates#102, l_quantity#68]
+            :        +- *(9) SortMergeJoin [o_orderkey#98], [l_orderkey#64], Inner
+            :           :- *(6) Project [o_orderkey#98, o_custkey#99, o_totalprice#101, o_orderdates#102]
+            :           :  +- *(6) SortMergeJoin [key#3871], [o_orderkey#98], Inner
+            :           :     :- *(3) Sort [key#3871 ASC NULLS FIRST], false, 0
+            :           :     :  +- Exchange hashpartitioning(key#3871, 200)
+            :           :     :     +- *(2) Project [l_orderkey#64 AS key#3871]
+            :           :     :        +- *(2) Filter (isnotnull(sum_quantity#3864) && (sum_quantity#3864 > 313.0))
+            :           :     :           +- *(2) HashAggregate(keys=[l_orderkey#64], functions=[sum(l_quantity#68)])
+            :           :     :              +- Exchange hashpartitioning(l_orderkey#64, 200)
+            :           :     :                 +- *(1) HashAggregate(keys=[l_orderkey#64], functions=[partial_sum(l_quantity#68)])
+            :           :     :                    +- *(1) Project [l_orderkey#64, l_quantity#68]
+            :           :     :                       +- *(1) Filter isnotnull(l_orderkey#64)
+            :           :     :                          +- *(1) FileScan parquet [l_orderkey#64,l_quantity#68] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_quantity:double>
+            :           :     +- *(5) Sort [o_orderkey#98 ASC NULLS FIRST], false, 0
+            :           :        +- Exchange hashpartitioning(o_orderkey#98, 200)
+            :           :           +- *(4) Project [o_orderkey#98, o_custkey#99, o_totalprice#101, o_orderdates#102]
+            :           :              +- *(4) Filter (isnotnull(o_orderkey#98) && isnotnull(o_custkey#99))
+            :           :                 +- *(4) FileScan parquet [o_orderkey#98,o_custkey#99,o_totalprice#101,o_orderdates#102] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderkey), IsNotNull(o_custkey)], ReadSchema: struct<o_orderkey:int,o_custkey:int,o_totalprice:double,o_orderdates:string>
+            :           +- *(8) Sort [l_orderkey#64 ASC NULLS FIRST], false, 0
+            :              +- Exchange hashpartitioning(l_orderkey#64, 200)
+            :                 +- *(7) Project [l_orderkey#64, l_quantity#68]
+            :                    +- *(7) Filter isnotnull(l_orderkey#64)
+            :                       +- *(7) FileScan parquet [l_orderkey#64,l_quantity#68] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_quantity:double>
+            +- *(12) Sort [c_custkey#118 ASC NULLS FIRST], false, 0
+               +- Exchange hashpartitioning(c_custkey#118, 200)
+                  +- *(11) Project [c_custkey#118, c_name#119]
+                     +- *(11) Filter isnotnull(c_custkey#118)
+                        +- *(11) FileScan parquet [c_custkey#118,c_name#119] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(c_custkey)], ReadSchema: struct<c_custkey:int,c_name:string>

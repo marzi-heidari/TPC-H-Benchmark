@@ -1,0 +1,26 @@
+
+== Physical Plan ==
+TakeOrderedAndProject(limit=10, orderBy=[revenue#269 DESC NULLS LAST,o_orderdates#102 ASC NULLS FIRST], output=[l_orderkey#64,o_orderdates#102,o_shippriority#105,revenue#269])
++- *(9) HashAggregate(keys=[l_orderkey#64, o_orderdates#102, o_shippriority#105], functions=[sum(orders_count#259)])
+   +- *(9) HashAggregate(keys=[l_orderkey#64, o_orderdates#102, o_shippriority#105], functions=[partial_sum(orders_count#259)])
+      +- *(9) Project [l_orderkey#64, (l_extendedprice#69 * (1.0 - l_discount#70)) AS orders_count#259, o_orderdates#102, o_shippriority#105]
+         +- *(9) SortMergeJoin [o_orderkey#98], [l_orderkey#64], Inner
+            :- *(6) Sort [o_orderkey#98 ASC NULLS FIRST], false, 0
+            :  +- Exchange hashpartitioning(o_orderkey#98, 200)
+            :     +- *(5) Project [o_orderkey#98, o_orderdates#102, o_shippriority#105]
+            :        +- *(5) SortMergeJoin [c_custkey#118], [o_custkey#99], Inner
+            :           :- *(2) Sort [c_custkey#118 ASC NULLS FIRST], false, 0
+            :           :  +- Exchange hashpartitioning(c_custkey#118, 200)
+            :           :     +- *(1) Project [c_custkey#118]
+            :           :        +- *(1) Filter ((isnotnull(c_mktsegment#124) && (c_mktsegment#124 = FURNITURE)) && isnotnull(c_custkey#118))
+            :           :           +- *(1) FileScan parquet [c_custkey#118,c_mktsegment#124] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(c_mktsegment), EqualTo(c_mktsegment,FURNITURE), IsNotNull(c_custkey)], ReadSchema: struct<c_custkey:int,c_mktsegment:string>
+            :           +- *(4) Sort [o_custkey#99 ASC NULLS FIRST], false, 0
+            :              +- Exchange hashpartitioning(o_custkey#99, 200)
+            :                 +- *(3) Project [o_orderkey#98, o_custkey#99, o_orderdates#102, o_shippriority#105]
+            :                    +- *(3) Filter (((isnotnull(o_orderdates#102) && (o_orderdates#102 < 1995-03-29)) && isnotnull(o_custkey#99)) && isnotnull(o_orderkey#98))
+            :                       +- *(3) FileScan parquet [o_orderkey#98,o_custkey#99,o_orderdates#102,o_shippriority#105] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderdates), LessThan(o_orderdates,1995-03-29), IsNotNull(o_custkey), IsNotNull(o_or..., ReadSchema: struct<o_orderkey:int,o_custkey:int,o_orderdates:string,o_shippriority:int>
+            +- *(8) Sort [l_orderkey#64 ASC NULLS FIRST], false, 0
+               +- Exchange hashpartitioning(l_orderkey#64, 200)
+                  +- *(7) Project [l_orderkey#64, l_extendedprice#69, l_discount#70]
+                     +- *(7) Filter ((isnotnull(l_shipdate#74) && (l_shipdate#74 > 1995-03-29)) && isnotnull(l_orderkey#64))
+                        +- *(7) FileScan parquet [l_orderkey#64,l_extendedprice#69,l_discount#70,l_shipdate#74] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(l_shipdate), GreaterThan(l_shipdate,1995-03-29), IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_extendedprice:double,l_discount:double,l_shipdate:string>

@@ -1,0 +1,87 @@
+
+== Parsed Logical Plan ==
+'Sort ['s_suppkey ASC NULLS FIRST], true
++- AnalysisBarrier
+      +- Project [s_suppkey#44, s_name#45, s_address#46, s_phone#48, total#228]
+         +- Join Inner, (l_suppkey#70 = s_suppkey#44)
+            :- Join Inner, (max_total#232 = total#228)
+            :  :- Aggregate [max(total#228) AS max_total#232]
+            :  :  +- Aggregate [l_suppkey#70], [l_suppkey#70, sum(value#222) AS total#228]
+            :  :     +- Project [l_suppkey#70, if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else UDF(l_extendedprice#73, l_discount#74) AS value#222]
+            :  :        +- Filter ((l_shipdate#78 >= 1993-01-01) && (l_shipdate#78 < 1993-04-01))
+            :  :           +- Relation[l_orderkey#68,l_partkey#69,l_suppkey#70,l_linenumber#71,l_quantity#72,l_extendedprice#73,l_discount#74,l_tax#75,l_returnflag#76,l_linestatus#77,l_shipdate#78,l_commitdate#79,l_receiptdate#80,l_shipinstruct#81,l_shipmode#82,l_comment#83,l_dummy#84] orc
+            :  +- Aggregate [l_suppkey#70], [l_suppkey#70, sum(value#222) AS total#228]
+            :     +- Project [l_suppkey#70, if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else UDF(l_extendedprice#73, l_discount#74) AS value#222]
+            :        +- Filter ((l_shipdate#78 >= 1993-01-01) && (l_shipdate#78 < 1993-04-01))
+            :           +- Relation[l_orderkey#68,l_partkey#69,l_suppkey#70,l_linenumber#71,l_quantity#72,l_extendedprice#73,l_discount#74,l_tax#75,l_returnflag#76,l_linestatus#77,l_shipdate#78,l_commitdate#79,l_receiptdate#80,l_shipinstruct#81,l_shipmode#82,l_comment#83,l_dummy#84] orc
+            +- Relation[s_suppkey#44,s_name#45,s_address#46,s_nationkey#47,s_phone#48,s_acctbal#49,s_comment#50,s_dummy#51] orc
+
+== Analyzed Logical Plan ==
+s_suppkey: int, s_name: string, s_address: string, s_phone: string, total: double
+Sort [s_suppkey#44 ASC NULLS FIRST], true
++- Project [s_suppkey#44, s_name#45, s_address#46, s_phone#48, total#228]
+   +- Join Inner, (l_suppkey#70 = s_suppkey#44)
+      :- Join Inner, (max_total#232 = total#228)
+      :  :- Aggregate [max(total#228) AS max_total#232]
+      :  :  +- Aggregate [l_suppkey#70], [l_suppkey#70, sum(value#222) AS total#228]
+      :  :     +- Project [l_suppkey#70, if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else UDF(l_extendedprice#73, l_discount#74) AS value#222]
+      :  :        +- Filter ((l_shipdate#78 >= 1993-01-01) && (l_shipdate#78 < 1993-04-01))
+      :  :           +- Relation[l_orderkey#68,l_partkey#69,l_suppkey#70,l_linenumber#71,l_quantity#72,l_extendedprice#73,l_discount#74,l_tax#75,l_returnflag#76,l_linestatus#77,l_shipdate#78,l_commitdate#79,l_receiptdate#80,l_shipinstruct#81,l_shipmode#82,l_comment#83,l_dummy#84] orc
+      :  +- Aggregate [l_suppkey#70], [l_suppkey#70, sum(value#222) AS total#228]
+      :     +- Project [l_suppkey#70, if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else UDF(l_extendedprice#73, l_discount#74) AS value#222]
+      :        +- Filter ((l_shipdate#78 >= 1993-01-01) && (l_shipdate#78 < 1993-04-01))
+      :           +- Relation[l_orderkey#68,l_partkey#69,l_suppkey#70,l_linenumber#71,l_quantity#72,l_extendedprice#73,l_discount#74,l_tax#75,l_returnflag#76,l_linestatus#77,l_shipdate#78,l_commitdate#79,l_receiptdate#80,l_shipinstruct#81,l_shipmode#82,l_comment#83,l_dummy#84] orc
+      +- Relation[s_suppkey#44,s_name#45,s_address#46,s_nationkey#47,s_phone#48,s_acctbal#49,s_comment#50,s_dummy#51] orc
+
+== Optimized Logical Plan ==
+Sort [s_suppkey#44 ASC NULLS FIRST], true
++- Project [s_suppkey#44, s_name#45, s_address#46, s_phone#48, total#228]
+   +- Join Inner, (l_suppkey#70 = s_suppkey#44)
+      :- Project [l_suppkey#70, total#228]
+      :  +- Join Inner, (max_total#232 = total#228)
+      :     :- Filter isnotnull(max_total#232)
+      :     :  +- Aggregate [max(total#228) AS max_total#232]
+      :     :     +- Aggregate [l_suppkey#70], [sum(value#222) AS total#228]
+      :     :        +- Project [l_suppkey#70, if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else UDF(l_extendedprice#73, l_discount#74) AS value#222]
+      :     :           +- Filter ((isnotnull(l_shipdate#78) && (l_shipdate#78 >= 1993-01-01)) && (l_shipdate#78 < 1993-04-01))
+      :     :              +- Relation[l_orderkey#68,l_partkey#69,l_suppkey#70,l_linenumber#71,l_quantity#72,l_extendedprice#73,l_discount#74,l_tax#75,l_returnflag#76,l_linestatus#77,l_shipdate#78,l_commitdate#79,l_receiptdate#80,l_shipinstruct#81,l_shipmode#82,l_comment#83,l_dummy#84] orc
+      :     +- Filter isnotnull(total#228)
+      :        +- Aggregate [l_suppkey#70], [l_suppkey#70, sum(value#222) AS total#228]
+      :           +- Project [l_suppkey#70, if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else UDF(l_extendedprice#73, l_discount#74) AS value#222]
+      :              +- Filter (((isnotnull(l_shipdate#78) && (l_shipdate#78 >= 1993-01-01)) && (l_shipdate#78 < 1993-04-01)) && isnotnull(l_suppkey#70))
+      :                 +- Relation[l_orderkey#68,l_partkey#69,l_suppkey#70,l_linenumber#71,l_quantity#72,l_extendedprice#73,l_discount#74,l_tax#75,l_returnflag#76,l_linestatus#77,l_shipdate#78,l_commitdate#79,l_receiptdate#80,l_shipinstruct#81,l_shipmode#82,l_comment#83,l_dummy#84] orc
+      +- Project [s_suppkey#44, s_name#45, s_address#46, s_phone#48]
+         +- Filter isnotnull(s_suppkey#44)
+            +- Relation[s_suppkey#44,s_name#45,s_address#46,s_nationkey#47,s_phone#48,s_acctbal#49,s_comment#50,s_dummy#51] orc
+
+== Physical Plan ==
+*(9) Sort [s_suppkey#44 ASC NULLS FIRST], true, 0
++- Exchange rangepartitioning(s_suppkey#44 ASC NULLS FIRST, 200)
+   +- *(8) Project [s_suppkey#44, s_name#45, s_address#46, s_phone#48, total#228]
+      +- *(8) SortMergeJoin [l_suppkey#70], [s_suppkey#44], Inner
+         :- *(5) Sort [l_suppkey#70 ASC NULLS FIRST], false, 0
+         :  +- *(5) Project [l_suppkey#70, total#228]
+         :     +- *(5) BroadcastHashJoin [max_total#232], [total#228], Inner, BuildLeft
+         :        :- BroadcastExchange HashedRelationBroadcastMode(List(input[0, double, false]))
+         :        :  +- *(3) Filter isnotnull(max_total#232)
+         :        :     +- *(3) HashAggregate(keys=[], functions=[max(total#228)], output=[max_total#232])
+         :        :        +- Exchange SinglePartition
+         :        :           +- *(2) HashAggregate(keys=[], functions=[partial_max(total#228)], output=[max#301])
+         :        :              +- *(2) HashAggregate(keys=[l_suppkey#70], functions=[sum(value#222)], output=[total#228])
+         :        :                 +- Exchange hashpartitioning(l_suppkey#70, 200)
+         :        :                    +- *(1) HashAggregate(keys=[l_suppkey#70], functions=[partial_sum(value#222)], output=[l_suppkey#70, sum#303])
+         :        :                       +- *(1) Project [l_suppkey#70, if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else UDF(l_extendedprice#73, l_discount#74) AS value#222]
+         :        :                          +- *(1) Filter ((isnotnull(l_shipdate#78) && (l_shipdate#78 >= 1993-01-01)) && (l_shipdate#78 < 1993-04-01))
+         :        :                             +- *(1) FileScan orc [l_suppkey#70,l_extendedprice#73,l_discount#74,l_shipdate#78] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_shipdate), GreaterThanOrEqual(l_shipdate,1993-01-01), LessThan(l_shipdate,1993-04-01)], ReadSchema: struct<l_suppkey:int,l_extendedprice:double,l_discount:double,l_shipdate:string>
+         :        +- *(5) Filter isnotnull(total#228)
+         :           +- *(5) HashAggregate(keys=[l_suppkey#70], functions=[sum(value#222)], output=[l_suppkey#70, total#228])
+         :              +- Exchange hashpartitioning(l_suppkey#70, 200)
+         :                 +- *(4) HashAggregate(keys=[l_suppkey#70], functions=[partial_sum(value#222)], output=[l_suppkey#70, sum#303])
+         :                    +- *(4) Project [l_suppkey#70, if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else if ((isnull(l_extendedprice#73) || isnull(l_discount#74))) null else UDF(l_extendedprice#73, l_discount#74) AS value#222]
+         :                       +- *(4) Filter (((isnotnull(l_shipdate#78) && (l_shipdate#78 >= 1993-01-01)) && (l_shipdate#78 < 1993-04-01)) && isnotnull(l_suppkey#70))
+         :                          +- *(4) FileScan orc [l_suppkey#70,l_extendedprice#73,l_discount#74,l_shipdate#78] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_shipdate), GreaterThanOrEqual(l_shipdate,1993-01-01), LessThan(l_shipdate,1993-04-01..., ReadSchema: struct<l_suppkey:int,l_extendedprice:double,l_discount:double,l_shipdate:string>
+         +- *(7) Sort [s_suppkey#44 ASC NULLS FIRST], false, 0
+            +- Exchange hashpartitioning(s_suppkey#44, 200)
+               +- *(6) Project [s_suppkey#44, s_name#45, s_address#46, s_phone#48]
+                  +- *(6) Filter isnotnull(s_suppkey#44)
+                     +- *(6) FileScan orc [s_suppkey#44,s_name#45,s_address#46,s_phone#48] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/supplier.orc], PartitionFilters: [], PushedFilters: [IsNotNull(s_suppkey)], ReadSchema: struct<s_suppkey:int,s_name:string,s_address:string,s_phone:string>

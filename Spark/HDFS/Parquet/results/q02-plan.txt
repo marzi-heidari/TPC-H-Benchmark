@@ -1,0 +1,75 @@
+
+>>> q2.explain()
+== Physical Plan ==
+TakeOrderedAndProject(limit=100, orderBy=[s_acctbal#43 DESC NULLS LAST,n_name#55 ASC NULLS FIRST,s_name#39 ASC NULLS FIRST,p_partkey#6 ASC NULLS FIRST], output=[s_acctbal#43,s_name#39,n_name#55,p_partkey#6,p_mfgr#8,s_address#40,s_phone#42,s_comment#44])
++- *(25) Project [s_acctbal#43, s_name#39, n_name#55, p_partkey#6, p_mfgr#8, s_address#40, s_phone#42, s_comment#44]
+   +- *(25) SortMergeJoin [ps_partkey#26, ps_supplycost#29], [ps_partkey#394, min#391], Inner
+      :- *(12) Sort [ps_partkey#26 ASC NULLS FIRST, ps_supplycost#29 ASC NULLS FIRST], false, 0
+      :  +- Exchange hashpartitioning(ps_partkey#26, ps_supplycost#29, 200)
+      :     +- *(11) SortMergeJoin [p_partkey#6], [ps_partkey#26], Inner
+      :        :- *(2) Sort [p_partkey#6 ASC NULLS FIRST], false, 0
+      :        :  +- Exchange hashpartitioning(p_partkey#6, 200)
+      :        :     +- *(1) Project [p_partkey#6, p_mfgr#8]
+      :        :        +- *(1) Filter ((((isnotnull(p_size#11) && isnotnull(p_type#10)) && (p_size#11 = 38)) && EndsWith(p_type#10, TIN)) && isnotnull(p_partkey#6))
+      :        :           +- *(1) FileScan parquet [p_partkey#6,p_mfgr#8,p_type#10,p_size#11] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/part.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(p_size), IsNotNull(p_type), EqualTo(p_size,38), StringEndsWith(p_type,TIN), IsNotNull(..., ReadSchema: struct<p_partkey:int,p_mfgr:string,p_type:string,p_size:int>
+      :        +- *(10) Sort [ps_partkey#26 ASC NULLS FIRST], false, 0
+      :           +- Exchange hashpartitioning(ps_partkey#26, 200)
+      :              +- *(9) Project [n_name#55, s_name#39, s_address#40, s_phone#42, s_acctbal#43, s_comment#44, ps_partkey#26, ps_supplycost#29]
+      :                 +- *(9) SortMergeJoin [s_suppkey#38], [ps_suppkey#27], Inner
+      :                    :- *(6) Sort [s_suppkey#38 ASC NULLS FIRST], false, 0
+      :                    :  +- Exchange hashpartitioning(s_suppkey#38, 200)
+      :                    :     +- *(5) Project [n_name#55, s_suppkey#38, s_name#39, s_address#40, s_phone#42, s_acctbal#43, s_comment#44]
+      :                    :        +- *(5) BroadcastHashJoin [n_nationkey#54], [s_nationkey#41], Inner, BuildLeft
+      :                    :           :- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[0, int, true] as bigint)))
+      :                    :           :  +- *(4) Project [n_nationkey#54, n_name#55]
+      :                    :           :     +- *(4) BroadcastHashJoin [r_regionkey#0], [n_regionkey#56], Inner, BuildLeft
+      :                    :           :        :- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[0, int, true] as bigint)))
+      :                    :           :        :  +- *(3) Project [r_regionkey#0]
+      :                    :           :        :     +- *(3) Filter ((isnotnull(r_name#1) && (r_name#1 = MIDDLE EAST)) && isnotnull(r_regionkey#0))
+      :                    :           :        :        +- *(3) FileScan parquet [r_regionkey#0,r_name#1] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/region.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(r_name), EqualTo(r_name,MIDDLE EAST), IsNotNull(r_regionkey)], ReadSchema: struct<r_regionkey:int,r_name:string>
+      :                    :           :        +- *(4) Project [n_nationkey#54, n_name#55, n_regionkey#56]
+      :                    :           :           +- *(4) Filter (isnotnull(n_regionkey#56) && isnotnull(n_nationkey#54))
+      :                    :           :              +- *(4) FileScan parquet [n_nationkey#54,n_name#55,n_regionkey#56] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/nation.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(n_regionkey), IsNotNull(n_nationkey)], ReadSchema: struct<n_nationkey:int,n_name:string,n_regionkey:int>
+      :                    :           +- *(5) Project [s_suppkey#38, s_name#39, s_address#40, s_nationkey#41, s_phone#42, s_acctbal#43, s_comment#44]
+      :                    :              +- *(5) Filter (isnotnull(s_nationkey#41) && isnotnull(s_suppkey#38))
+      :                    :                 +- *(5) FileScan parquet [s_suppkey#38,s_name#39,s_address#40,s_nationkey#41,s_phone#42,s_acctbal#43,s_comment#44] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/supplier.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(s_nationkey), IsNotNull(s_suppkey)], ReadSchema: struct<s_suppkey:int,s_name:string,s_address:string,s_nationkey:int,s_phone:string,s_acctbal:doub...
+      :                    +- *(8) Sort [ps_suppkey#27 ASC NULLS FIRST], false, 0
+      :                       +- Exchange hashpartitioning(ps_suppkey#27, 200)
+      :                          +- *(7) Project [ps_partkey#26, ps_suppkey#27, ps_supplycost#29]
+      :                             +- *(7) Filter ((isnotnull(ps_suppkey#27) && isnotnull(ps_partkey#26)) && isnotnull(ps_supplycost#29))
+      :                                +- *(7) FileScan parquet [ps_partkey#26,ps_suppkey#27,ps_supplycost#29] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/partsupp.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(ps_suppkey), IsNotNull(ps_partkey), IsNotNull(ps_supplycost)], ReadSchema: struct<ps_partkey:int,ps_suppkey:int,ps_supplycost:double>
+      +- *(24) Sort [ps_partkey#394 ASC NULLS FIRST, min#391 ASC NULLS FIRST], false, 0
+         +- Exchange hashpartitioning(ps_partkey#394, min#391, 200)
+            +- *(23) Filter isnotnull(min#391)
+               +- *(23) HashAggregate(keys=[ps_partkey#394], functions=[min(ps_supplycost#397)])
+                  +- *(23) HashAggregate(keys=[ps_partkey#394], functions=[partial_min(ps_supplycost#397)])
+                     +- *(23) Project [ps_partkey#394, ps_supplycost#397]
+                        +- *(23) SortMergeJoin [p_partkey#6], [ps_partkey#394], Inner
+                           :- *(14) Sort [p_partkey#6 ASC NULLS FIRST], false, 0
+                           :  +- Exchange hashpartitioning(p_partkey#6, 200)
+                           :     +- *(13) Project [p_partkey#6]
+                           :        +- *(13) Filter ((((isnotnull(p_size#11) && isnotnull(p_type#10)) && (p_size#11 = 38)) && EndsWith(p_type#10, TIN)) && isnotnull(p_partkey#6))
+                           :           +- *(13) FileScan parquet [p_partkey#6,p_type#10,p_size#11] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/part.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(p_size), IsNotNull(p_type), EqualTo(p_size,38), StringEndsWith(p_type,TIN), IsNotNull(..., ReadSchema: struct<p_partkey:int,p_type:string,p_size:int>
+                           +- *(22) Sort [ps_partkey#394 ASC NULLS FIRST], false, 0
+                              +- Exchange hashpartitioning(ps_partkey#394, 200)
+                                 +- *(21) Project [ps_partkey#394, ps_supplycost#397]
+                                    +- *(21) SortMergeJoin [s_suppkey#38], [ps_suppkey#395], Inner
+                                       :- *(18) Sort [s_suppkey#38 ASC NULLS FIRST], false, 0
+                                       :  +- Exchange hashpartitioning(s_suppkey#38, 200)
+                                       :     +- *(17) Project [s_suppkey#38]
+                                       :        +- *(17) BroadcastHashJoin [n_nationkey#54], [s_nationkey#41], Inner, BuildLeft
+                                       :           :- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[0, int, true] as bigint)))
+                                       :           :  +- *(16) Project [n_nationkey#54]
+                                       :           :     +- *(16) BroadcastHashJoin [r_regionkey#0], [n_regionkey#56], Inner, BuildLeft
+                                       :           :        :- ReusedExchange [r_regionkey#0], BroadcastExchange HashedRelationBroadcastMode(List(cast(input[0, int, true] as bigint)))
+                                       :           :        +- *(16) Project [n_nationkey#54, n_regionkey#56]
+                                       :           :           +- *(16) Filter (isnotnull(n_regionkey#56) && isnotnull(n_nationkey#54))
+                                       :           :              +- *(16) FileScan parquet [n_nationkey#54,n_regionkey#56] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/nation.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(n_regionkey), IsNotNull(n_nationkey)], ReadSchema: struct<n_nationkey:int,n_regionkey:int>
+                                       :           +- *(17) Project [s_suppkey#38, s_nationkey#41]
+                                       :              +- *(17) Filter (isnotnull(s_nationkey#41) && isnotnull(s_suppkey#38))
+                                       :                 +- *(17) FileScan parquet [s_suppkey#38,s_nationkey#41] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/supplier.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(s_nationkey), IsNotNull(s_suppkey)], ReadSchema: struct<s_suppkey:int,s_nationkey:int>
+                                       +- *(20) Sort [ps_suppkey#395 ASC NULLS FIRST], false, 0
+                                          +- Exchange hashpartitioning(ps_suppkey#395, 200)
+                                             +- *(19) Project [ps_partkey#394, ps_suppkey#395, ps_supplycost#397]
+                                                +- *(19) Filter (isnotnull(ps_suppkey#395) && isnotnull(ps_partkey#394))
+                                                   +- *(19) FileScan parquet [ps_partkey#394,ps_suppkey#395,ps_supplycost#397] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/partsupp.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(ps_suppkey), IsNotNull(ps_partkey)], ReadSchema: struct<ps_partkey:int,ps_suppkey:int,ps_supplycost:double>

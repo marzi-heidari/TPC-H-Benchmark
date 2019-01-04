@@ -1,0 +1,36 @@
+QUERY PLAN
+
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-----------
+ Finalize Aggregate  (cost=7631406.90..7631406.91 rows=1 width=32) (actual time=259
+1640.139..2591640.140 rows=1 loops=1)
+   ->  Gather  (cost=7631406.66..7631406.87 rows=2 width=64) (actual time=2591629.0
+59..2592542.577 rows=3 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         ->  Partial Aggregate  (cost=7630406.66..7630406.67 rows=1 width=64) (actu
+al time=2591271.209..2591271.209 rows=1 loops=3)
+               ->  Parallel Hash Join  (cost=6934977.68..7614417.06 rows=913691 wid
+th=33) (actual time=2564462.741..2590622.962 rows=894869 loops=3)
+                     Hash Cond: (part.p_partkey = lineitem.l_partkey)
+                     ->  Parallel Seq Scan on part  (cost=0.00..492928.33 rows=8333
+333 width=25) (actual time=0.086..2628.899 rows=6666667 loops=3)
+                     ->  Parallel Hash  (cost=6915331.96..6915331.96 rows=1070058 w
+idth=20) (actual time=2558162.646..2558162.646 rows=894869 loops=3)
+                           Buckets: 65536  Batches: 64  Memory Usage: 2848kB
+                           ->  Parallel Bitmap Heap Scan on lineitem  (cost=54491.9
+9..6915331.96 rows=1070058 width=20) (actual time=18671.973..2543061.289 rows=89486
+9 loops=3)
+                                 Recheck Cond: ((l_shipdate >= '1994-03-01'::date)
+AND (l_shipdate < '1994-04-01 00:00:00'::timestamp without time zone))
+                                 Rows Removed by Index Recheck: 22684728
+                                 Heap Blocks: exact=13912 lossy=477365
+                                 ->  Bitmap Index Scan on i_l_shipdate  (cost=0.00.
+.53849.96 rows=2568139 width=0) (actual time=18395.802..18395.802 rows=2684608 loop
+s=1)
+                                       Index Cond: ((l_shipdate >= '1994-03-01'::da
+te) AND (l_shipdate < '1994-04-01 00:00:00'::timestamp without time zone))
+ Planning Time: 11263.196 ms
+ Execution Time: 2592543.495 ms
+(18 rows)

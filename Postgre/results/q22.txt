@@ -1,0 +1,35 @@
+              QUERY PLAN
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize GroupAggregate  (cost=1572475.97..1582634.26 rows=76104 width=72) (actual rows=5 loops=1)
+   Group Key: ("substring"((customer.c_phone)::text, 1, 2))
+   InitPlan 1 (returns $1)
+     ->  Finalize Aggregate  (cost=534793.41..534793.42 rows=1 width=32) (actual rows=1 loops=1)
+           ->  Gather  (cost=534793.19..534793.40 rows=2 width=32) (actual rows=3 loops=1)
+                 Workers Planned: 2
+                 Workers Launched: 2
+                 ->  Partial Aggregate  (cost=533793.19..533793.20 rows=1 width=32) (actual rows=1 loops=3)
+                       ->  Parallel Seq Scan on customer customer_1  (cost=0.00..533295.50 rows=199074 width=6) (actual rows=908984 loops=3)
+                             Filter: ((c_acctbal > 0.00) AND ("substring"((c_phone)::text, 1, 2) = ANY ('{30,24,31,38,25,34,37}'::text[])))
+                             Rows Removed by Filter: 4091016
+   ->  Gather Merge  (cost=1037682.55..1045874.82 rows=63420 width=72) (actual rows=10 loops=1)
+         Workers Planned: 2
+         Params Evaluated: $1
+         Workers Launched: 1
+         ->  Partial GroupAggregate  (cost=1036682.53..1037554.55 rows=31710 width=72) (actual rows=5 loops=2)
+               Group Key: ("substring"((customer.c_phone)::text, 1, 2))
+               ->  Sort  (cost=1036682.53..1036761.80 rows=31710 width=38) (actual
+rows=227196 loops=2)
+                     Sort Key: ("substring"((customer.c_phone)::text, 1, 2))
+                     Sort Method: external merge  Disk: 4472kB
+                     Worker 0:  Sort Method: external merge  Disk: 4440kB
+                     ->  Nested Loop Anti Join  (cost=0.57..1034311.79 rows=31710 width=38) (actual rows=227196 loops=2)
+                           ->  Parallel Seq Scan on customer  (cost=0.00..533295.50 rows=72917 width=26) (actual rows=681646 loops=2)
+                                 Filter: ((c_acctbal > $1) AND ("substring"((c_phone)::text, 1, 2) = ANY ('{30,24,31,38,25,34,37}'::text[])))
+                                 Rows Removed by Filter: 6818354
+.57..74.88 rows=18 width=8) (actual rows=1 loops=1363292)custkey on orders  (cost=0--More--
+                                 Index Cond: (o_custkey = customer.c_custkey)
+                                 Heap Fetches: 778409
+ Planning Time: 4.118 ms
+ Execution Time: 2013975.800 ms
+(30 rows)

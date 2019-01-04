@@ -1,0 +1,29 @@
+
++--------+--------------------+------+--------------+
+| p_brand|              p_type|p_size|supplier_count|
++--------+--------------------+------+--------------+
+|Brand#14|ECONOMY BRUSHED C...|    19|           580|
+|Brand#25|STANDARD PLATED N...|    19|           572|
+|Brand#15|STANDARD PLATED B...|    19|           564|
+|Brand#12|ECONOMY ANODIZED ...|    19|           556|
+|Brand#13| PROMO PLATED COPPER|    19|           556|
+|Brand#32|PROMO BRUSHED NICKEL|    19|           548|
+|Brand#11|LARGE POLISHED BRASS|    19|           544|
+|Brand#22|SMALL POLISHED BRASS|    19|           543|
+|Brand#41|PROMO ANODIZED BRASS|    19|           543|
+|Brand#11|ECONOMY BURNISHED...|    19|           540|
+|Brand#15|STANDARD ANODIZED...|    19|           540|
+|Brand#32|SMALL BRUSHED NICKEL|    19|           540|
+|Brand#54|STANDARD BRUSHED ...|    19|           540|
+|Brand#52|ECONOMY POLISHED ...|    19|           539|
+|Brand#13|  LARGE POLISHED TIN|    19|           536|
+|Brand#35|MEDIUM BRUSHED NI...|    19|           536|
+|Brand#54|SMALL ANODIZED BRASS|    19|           536|
+|Brand#13|ECONOMY BURNISHED...|    19|           535|
+|Brand#11|STANDARD BURNISHE...|    19|           532|
+|Brand#11| STANDARD PLATED TIN|    19|           532|
++--------+--------------------+------+--------------+
+only showing top 20 rows
+
+
+0.1142139999999996

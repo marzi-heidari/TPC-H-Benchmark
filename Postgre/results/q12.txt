@@ -1,0 +1,35 @@
+ QUERY PLAN
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+-----------------------------
+ Finalize GroupAggregate  (cost=14368156.06..14376415.96 rows=7 width=27) (actual time=599625.146..599625.153 rows=2 loo
+ps=1)
+   Group Key: lineitem.l_shipmode
+   ->  Gather Merge  (cost=14368156.06..14376415.78 rows=14 width=27) (actual time=599497.110..599631.694 rows=6 loops=1
+)
+         Workers Planned: 2
+         Workers Launched: 2
+         ->  Partial GroupAggregate  (cost=14367156.03..14375414.14 rows=7 width=27) (actual time=599421.135..599592.139
+ rows=2 loops=3)
+               Group Key: lineitem.l_shipmode
+               ->  Sort  (cost=14367156.03..14368188.29 rows=412902 width=27) (actual time=599214.269..599429.601 rows=3
+60800 loops=3)
+                     Sort Key: lineitem.l_shipmode
+                     Sort Method: external merge  Disk: 13048kB
+                     Worker 0:  Sort Method: external merge  Disk: 13120kB
+                     Worker 1:  Sort Method: external merge  Disk: 13216kB
+                     ->  Nested Loop  (cost=0.57..14318761.19 rows=412902 width=27) (actual time=88119.695..598323.799 r
+ows=360800 loops=3)
+                           ->  Parallel Seq Scan on lineitem  (cost=0.00..10773538.60 rows=412902 width=19) (actual time
+=88098.484..433804.940 rows=360800 loops=3)
+                                 Filter: ((l_shipmode = ANY ('{FOB,SHIP}'::bpchar[])) AND (l_commitdate < l_receiptdate)
+ AND (l_shipdate < l_commitdate) AND (l_receiptdate >= '1994-01-01'::date) AND (l_receiptdate < '1995-01-01 00:00:00'::t
+imestamp without time zone))
+                                 Rows Removed by Filter: 69166365
+                           ->  Index Scan using o_orderkey_idx on orders  (cost=0.57..8.59 rows=1 width=20) (actual time
+=0.453..0.453 rows=1 loops=1082400)
+                                 Index Cond: (o_orderkey = lineitem.l_orderkey)
+ Planning Time: 352.176 ms
+ Execution Time: 599634.017 ms
+(20 rows)

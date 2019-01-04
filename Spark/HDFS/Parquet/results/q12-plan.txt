@@ -1,0 +1,20 @@
+
+== Physical Plan ==
+*(8) Sort [l_shipmode#78 ASC NULLS FIRST], true, 0
++- Exchange rangepartitioning(l_shipmode#78 ASC NULLS FIRST, 200)
+   +- *(7) HashAggregate(keys=[l_shipmode#78], functions=[sum(cast(<lambda>(o_orderpriority#103) as bigint)), sum(cast(<lambda>(o_orderpriority#103) as bigint))])
+      +- Exchange hashpartitioning(l_shipmode#78, 200)
+         +- *(6) HashAggregate(keys=[l_shipmode#78], functions=[partial_sum(cast(pythonUDF0#2798 as bigint)), partial_sum(cast(pythonUDF1#2799 as bigint))])
+            +- BatchEvalPython [<lambda>(o_orderpriority#103), <lambda>(o_orderpriority#103)], [l_shipmode#78, o_orderpriority#103, pythonUDF0#2798, pythonUDF1#2799]
+               +- *(5) Project [l_shipmode#78, o_orderpriority#103]
+                  +- *(5) SortMergeJoin [l_orderkey#64], [o_orderkey#98], Inner
+                     :- *(2) Sort [l_orderkey#64 ASC NULLS FIRST], false, 0
+                     :  +- Exchange hashpartitioning(l_orderkey#64, 200)
+                     :     +- *(1) Project [l_orderkey#64, l_shipmode#78]
+                     :        +- *(1) Filter ((((((((isnotnull(l_shipdate#74) && isnotnull(l_commitdate#75)) && isnotnull(l_receiptdate#76)) && ((l_shipmode#78 = FOB) || (l_shipmode#78 = SHIP))) && (l_commitdate#75 < l_receiptdate#76)) && (l_shipdate#74 < l_commitdate#75)) && (l_receiptdate#76 >= 1994-01-01)) && (l_receiptdate#76 < 1995-01-01)) && isnotnull(l_orderkey#64))
+                     :           +- *(1) FileScan parquet [l_orderkey#64,l_shipdate#74,l_commitdate#75,l_receiptdate#76,l_shipmode#78] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(l_shipdate), IsNotNull(l_commitdate), IsNotNull(l_receiptdate), Or(EqualTo(l_shipmode,..., ReadSchema: struct<l_orderkey:int,l_shipdate:string,l_commitdate:string,l_receiptdate:string,l_shipmode:string>
+                     +- *(4) Sort [o_orderkey#98 ASC NULLS FIRST], false, 0
+                        +- Exchange hashpartitioning(o_orderkey#98, 200)
+                           +- *(3) Project [o_orderkey#98, o_orderpriority#103]
+                              +- *(3) Filter isnotnull(o_orderkey#98)
+                                 +- *(3) FileScan parquet [o_orderkey#98,o_orderpriority#103] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderkey)], ReadSchema: struct<o_orderkey:int,o_orderpriority:string>

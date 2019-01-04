@@ -1,0 +1,63 @@
+       QUERY PLAN
+
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+--------------------------------------------------------------
+ Limit  (cost=18860144.06..18860144.31 rows=100 width=71) (actual time=1236381.033.
+.1236381.312 rows=100 loops=1)
+   ->  Sort  (cost=18860144.06..18860361.00 rows=86777 width=71) (actual time=12363
+81.032..1236381.040 rows=100 loops=1)
+         Sort Key: orders.o_totalprice DESC, orders.o_orderdate
+         Sort Method: top-N heapsort  Memory: 38kB
+         ->  Finalize GroupAggregate  (cost=18845859.29..18856827.50 rows=86777 wid
+th=71) (actual time=1236378.903..1236380.538 rows=320 loops=1)
+               Group Key: customer.c_custkey, orders.o_orderkey
+               ->  Gather Merge  (cost=18845859.29..18855019.65 rows=72314 width=71
+) (actual time=1236378.870..1236380.272 rows=320 loops=1)
+                     Workers Planned: 2
+                     Workers Launched: 0
+                     ->  Partial GroupAggregate  (cost=18844859.27..18845672.80 row
+s=36157 width=71) (actual time=1236378.047..1236379.157 rows=320 loops=1)
+                           Group Key: customer.c_custkey, orders.o_orderkey
+                           ->  Sort  (cost=18844859.27..18844949.66 rows=36157 widt
+h=44) (actual time=1236378.005..1236378.168 rows=2240 loops=1)
+                                 Sort Key: customer.c_custkey, orders.o_orderkey
+                                 Sort Method: quicksort  Memory: 272kB
+                                 ->  Merge Join  (cost=6387.80..18842121.82 rows=36
+157 width=44) (actual time=43439.743..1236373.468 rows=2240 loops=1)
+                                       Merge Cond: (lineitem.l_orderkey = orders.o_
+orderkey)
+                                       ->  Parallel Index Scan using l_orderkey_idx
+ on lineitem  (cost=0.57..13017735.69 rows=86908960 width=13) (actual time=0.013..7
+6242.576 rows=208353347 loops=1)
+                                       ->  Materialize  (cost=1.58..16344166.31 row
+s=62405 width=47) (actual time=42828.404..1136368.041 rows=2234 loops=1)
+                                             ->  Nested Loop  (cost=1.58..16344010.
+29 rows=62405 width=47) (actual time=42828.385..1136366.109 rows=320 loops=1)
+                                                   ->  Nested Loop  (cost=1.14..158
+16623.85 rows=62405 width=32) (actual time=42750.846..1120490.370 rows=320 loops=1)
+                                                         ->  GroupAggregate  (cost=
+0.57..15280176.86 rows=62405 width=8) (actual time=42750.443..1114187.831 rows=320
+loops=1)
+                                                               Group Key: lineitem_
+1.l_orderkey
+                                                               Filter: (sum(lineite
+m_1.l_quantity) > '313'::numeric)
+                                                               Rows Removed by Filt
+er: 52143100
+                                                               ->  Index Scan using
+ l_orderkey_idx on lineitem lineitem_1  (cost=0.57..14234461.13 rows=208581504 widt
+h=13) (actual time=0.012..1022030.313 rows=208581496 loops=1)
+                                                         ->  Index Scan using o_ord
+erkey_idx on orders  (cost=0.57..8.59 rows=1 width=24) (actual time=19.687..19.687
+rows=1 loops=320)
+                                                               Index Cond: (o_order
+key = lineitem_1.l_orderkey)
+                                                   ->  Index Scan using i_c_custkey
+ on customer  (cost=0.43..8.45 rows=1 width=23) (actual time=49.604..49.604 rows=1
+loops=320)
+                                                         Index Cond: (c_custkey = o
+rders.o_custkey)
+ Planning Time: 5468.235 ms
+ Execution Time: 1236381.661 ms
+(31 rows)
