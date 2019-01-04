@@ -1,0 +1,36 @@
+
+
+== Physical Plan ==
+*(13) Sort [cntrycode#161 ASC NULLS FIRST], true, 0
++- Exchange rangepartitioning(cntrycode#161 ASC NULLS FIRST, 200)
+   +- *(12) HashAggregate(keys=[cntrycode#161], functions=[count(c_acctbal#121), sum(c_acctbal#121)])
+      +- Exchange hashpartitioning(cntrycode#161, 200)
+         +- *(11) HashAggregate(keys=[cntrycode#161], functions=[partial_count(c_acctbal#121), partial_sum(c_acctbal#121)])
+            +- *(11) Project [c_acctbal#121, cntrycode#161]
+               +- BroadcastNestedLoopJoin BuildRight, Inner, (c_acctbal#121 > avg_acctbal#141)
+                  :- *(7) Project [c_acctbal#121, cntrycode#161]
+                  :  +- *(7) Filter isnull(o_custkey#363)
+                  :     +- SortMergeJoin [o_custkey#363], [c_custkey#116], RightOuter
+                  :        :- *(2) Sort [o_custkey#363 ASC NULLS FIRST], false, 0
+                  :        :  +- Exchange hashpartitioning(o_custkey#363, 200)
+                  :        :     +- *(1) FileScan orc [o_custkey#363] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.orc], PartitionFilters: [], PushedFilters: [], ReadSchema: struct<o_custkey:int>
+                  :        +- *(6) Sort [c_custkey#116 ASC NULLS FIRST], false, 0
+                  :           +- Exchange hashpartitioning(c_custkey#116, 200)
+                  :              +- *(5) Project [c_acctbal#121, c_custkey#116, pythonUDF0#490 AS cntrycode#161]
+                  :                 +- BatchEvalPython [<lambda>(c_phone#120)], [c_custkey#116, c_phone#120, c_acctbal#121, pythonUDF0#490]
+                  :                    +- *(4) Project [c_custkey#116, c_phone#120, c_acctbal#121]
+                  :                       +- *(4) Filter pythonUDF0#489: boolean
+                  :                          +- BatchEvalPython [<lambda>(<lambda>(c_phone#120))], [c_custkey#116, c_phone#120, c_acctbal#121, pythonUDF0#489]
+                  :                             +- *(3) Filter isnotnull(c_acctbal#121)
+                  :                                +- *(3) FileScan parquet [c_custkey#116,c_phone#120,c_acctbal#121] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(c_acctbal)], ReadSchema: struct<c_custkey:int,c_phone:string,c_acctbal:double>
+                  +- BroadcastExchange IdentityBroadcastMode
+                     +- *(10) Filter isnotnull(avg_acctbal#141)
+                        +- *(10) HashAggregate(keys=[], functions=[avg(c_acctbal#121)])
+                           +- Exchange SinglePartition
+                              +- *(9) HashAggregate(keys=[], functions=[partial_avg(c_acctbal#121)])
+                                 +- *(9) Project [c_acctbal#121]
+                                    +- *(9) Project [c_phone#120, c_acctbal#121]
+                                       +- *(9) Filter pythonUDF0#491: boolean
+                                          +- BatchEvalPython [<lambda>(<lambda>(c_phone#120))], [c_phone#120, c_acctbal#121, pythonUDF0#491]
+                                             +- *(8) Filter (isnotnull(c_acctbal#121) && (c_acctbal#121 > 0.0))
+                                                +- *(8) FileScan parquet [c_phone#120,c_acctbal#121] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.parquet], PartitionFilters: [], PushedFilters: [IsNotNull(c_acctbal), GreaterThan(c_acctbal,0.0)], ReadSchema: struct<c_phone:string,c_acctbal:double>
