@@ -1,27 +1,26 @@
------+--------------------+-----------------+
-|c_custkey|c_name|c_acctbal|        c_phone|              n_name|           c_address|           c_comment|          revenue|
-+---------+------+---------+---------------+--------------------+--------------------+--------------------+-----------------+
-|  7450894|  null|   927.18|11-833-256-7879|ARGENTINA        ...|hxPXtdJ84fyOre7gM...|packages are insi...|      936768.8469|
-|  9739771|  null|  1286.48|23-281-450-4794|JORDAN           ...|  tC7c8bZ7 By6nEoHRL|p furiously depos...|      842966.5285|
-|  4571035|  null|  6704.13|33-138-285-3770|UNITED KINGDOM   ...|20IDf0Fx1ahSqImFX...|e carefully acros...|      838705.6168|
-|   637855|  null|  2674.86|26-852-120-2850|MOZAMBIQUE       ...|         q5TskwlicGP|al instructions s...|812034.3777999999|
-| 10781974|  null|  5079.77|29-651-722-6239|ROMANIA          ...|Cv2p,eRTt8C  WwJV...|egular notornis. ...|      801735.5176|
-| 11361613|  null|  4644.71|19-344-539-9187|INDONESIA        ...|     jWKghIqWp5Vzt2s|latelets cajole s...|      800558.4337|
-|  1259743|  null|  2592.74|15-733-636-6732|ETHIOPIA         ...|YVe ,jDra4xnKtfzS...|eposits sleep acc...|      793274.7846|
-|  5154136|  null|  1028.97|25-841-379-9394|MOROCCO          ...|Y,cjCdRGVz1j g8YQ...|boost quickly sly...|787191.1959000002|
-| 14986552|  null|  2678.94|11-671-762-3613|ARGENTINA        ...|          tl5yB8W1C0|ual ideas sleep d...|781645.8637999999|
-|  2905816|  null|  5085.53|34-217-584-5820|UNITED STATES    ...|          bcLOp3b9PA| the furiously ex...|778729.4413999999|
-|  6184141|  null|  5901.88|12-563-743-4211|BRAZIL           ...|YouilzzEFBn8Q6atx...|en instructions b...|      772721.0973|
-|  7852024|  null|  1197.57|18-141-580-3886|INDIA            ...|2 lZJ,yBgPkRHVO6y...|osits haggle quic...|      769688.6616|
-|  7183231|  null|  -683.01|18-270-127-8463|INDIA            ...|     ozSXeIbCwiOQJhN|braids. furiously...|      768455.8796|
-|  1627651|  null|  3059.82|25-732-202-4862|MOROCCO          ...|cp3JS2a9Yu8cBKaDr...|ts cajole careful...|      768300.3006|
-| 13624771|  null|  -168.68|20-919-886-5399|IRAN             ...|sxMG5r82qFaZLAqmC...|the, final reques...|767856.1562000001|
-| 13896424|  null|  3798.91|19-494-837-4503|INDONESIA        ...|          csALLLLaTB| cajole carefully...|760957.6214000001|
-|  4926817|  null|  5462.22|32-610-751-1595|RUSSIA           ...|       X9PvpAssUMkoi|carefully unusual...|      758756.8533|
-|   319150|  null|  3257.68|20-837-276-7259|IRAN             ...|l1KV7LZ3ih7cgjuQU...|ly ironic request...|      757235.8949|
-|  5894188|  null|   3062.0|12-372-345-6045|BRAZIL           ...|1PrX23NPGc 81N8nM...|unts after the sl...|      756482.0641|
-|  3387028|  null|  3726.64|15-880-219-8399|ETHIOPIA         ...|       j4HWo86pMyWym|ckly among the fu...|755937.5756999999|
-+---------+------+---------+---------------+--------------------+--------------------+--------------------+-----------------+
-
++---------+------------------+---------+---------------+--------------------+--------------------+--------------------+-----------------+
+|c_custkey|            c_name|c_acctbal|        c_phone|              n_name|           c_address|           c_comment|          revenue|
++---------+------------------+---------+---------------+--------------------+--------------------+--------------------+-----------------+
+|  7450894|Customer#007450894|   927.18|11-833-256-7879|ARGENTINA        ...|hxPXtdJ84fyOre7gM...|packages are insi...|      936768.8469|
+|  9739771|Customer#009739771|  1286.48|23-281-450-4794|JORDAN           ...|  tC7c8bZ7 By6nEoHRL|p furiously depos...|      842966.5285|
+|  4571035|Customer#004571035|  6704.13|33-138-285-3770|UNITED KINGDOM   ...|20IDf0Fx1ahSqImFX...|e carefully acros...|      838705.6168|
+|   637855|Customer#000637855|  2674.86|26-852-120-2850|MOZAMBIQUE       ...|         q5TskwlicGP|al instructions s...|812034.3777999999|
+| 10781974|Customer#010781974|  5079.77|29-651-722-6239|ROMANIA          ...|Cv2p,eRTt8C  WwJV...|egular notornis. ...|      801735.5176|
+| 11361613|Customer#011361613|  4644.71|19-344-539-9187|INDONESIA        ...|     jWKghIqWp5Vzt2s|latelets cajole s...|      800558.4337|
+|  1259743|Customer#001259743|  2592.74|15-733-636-6732|ETHIOPIA         ...|YVe ,jDra4xnKtfzS...|eposits sleep acc...|      793274.7846|
+|  5154136|Customer#005154136|  1028.97|25-841-379-9394|MOROCCO          ...|Y,cjCdRGVz1j g8YQ...|boost quickly sly...|787191.1959000002|
+| 14986552|Customer#014986552|  2678.94|11-671-762-3613|ARGENTINA        ...|          tl5yB8W1C0|ual ideas sleep d...|781645.8637999999|
+|  2905816|Customer#002905816|  5085.53|34-217-584-5820|UNITED STATES    ...|          bcLOp3b9PA| the furiously ex...|778729.4413999999|
+|  6184141|Customer#006184141|  5901.88|12-563-743-4211|BRAZIL           ...|YouilzzEFBn8Q6atx...|en instructions b...|      772721.0973|
+|  7852024|Customer#007852024|  1197.57|18-141-580-3886|INDIA            ...|2 lZJ,yBgPkRHVO6y...|osits haggle quic...|      769688.6616|
+|  7183231|Customer#007183231|  -683.01|18-270-127-8463|INDIA            ...|     ozSXeIbCwiOQJhN|braids. furiously...|      768455.8796|
+|  1627651|Customer#001627651|  3059.82|25-732-202-4862|MOROCCO          ...|cp3JS2a9Yu8cBKaDr...|ts cajole careful...|      768300.3006|
+| 13624771|Customer#013624771|  -168.68|20-919-886-5399|IRAN             ...|sxMG5r82qFaZLAqmC...|the, final reques...|767856.1562000001|
+| 13896424|Customer#013896424|  3798.91|19-494-837-4503|INDONESIA        ...|          csALLLLaTB| cajole carefully...|760957.6214000001|
+|  4926817|Customer#004926817|  5462.22|32-610-751-1595|RUSSIA           ...|       X9PvpAssUMkoi|carefully unusual...|      758756.8533|
+|   319150|Customer#000319150|  3257.68|20-837-276-7259|IRAN             ...|l1KV7LZ3ih7cgjuQU...|ly ironic request...|      757235.8949|
+|  5894188|Customer#005894188|   3062.0|12-372-345-6045|BRAZIL           ...|1PrX23NPGc 81N8nM...|unts after the sl...|      756482.0641|
+|  3387028|Customer#003387028|  3726.64|15-880-219-8399|ETHIOPIA         ...|       j4HWo86pMyWym|ckly among the fu...|755937.5756999999|
++---------+------------------+---------+---------------+--------------------+--------------------+--------------------+-----------------+
 
 0.031142000000000003
