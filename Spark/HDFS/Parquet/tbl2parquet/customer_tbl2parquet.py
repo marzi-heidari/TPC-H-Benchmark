@@ -17,7 +17,7 @@ df = data.\
     map(lambda x: x.split("|")).\
     map(lambda x: {\
          'c_custkey':int(x[0]),\
-        'c_name"':x[1],\
+        'c_name':x[1],\
         'c_address':x[2],\
         'c_nationkey':int(x[3]),\
         'c_phone':x[4],\
