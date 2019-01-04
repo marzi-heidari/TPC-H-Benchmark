@@ -1,0 +1,22 @@
+
+== Physical Plan ==
+*(9) Sort [custdist#842L DESC NULLS LAST, c_count#836L DESC NULLS LAST], true, 0
++- Exchange rangepartitioning(custdist#842L DESC NULLS LAST, c_count#836L DESC NULLS LAST, 200)
+   +- *(8) HashAggregate(keys=[c_count#836L], functions=[count(o_custkey#67)])
+      +- Exchange hashpartitioning(c_count#836L, 200)
+         +- *(7) HashAggregate(keys=[c_count#836L], functions=[partial_count(o_custkey#67)])
+            +- *(7) HashAggregate(keys=[o_custkey#67], functions=[count(o_orderkey#66)])
+               +- Exchange hashpartitioning(o_custkey#67, 200)
+                  +- *(6) HashAggregate(keys=[o_custkey#67], functions=[partial_count(o_orderkey#66)])
+                     +- *(6) Project [o_orderkey#66, o_custkey#67]
+                        +- SortMergeJoin [c_custkey#120], [o_custkey#67], LeftOuter
+                           :- *(2) Sort [c_custkey#120 ASC NULLS FIRST], false, 0
+                           :  +- Exchange hashpartitioning(c_custkey#120, 200)
+                           :     +- *(1) FileScan orc [c_custkey#120] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.orc], PartitionFilters: [], PushedFilters: [], ReadSchema: struct<c_custkey:int>
+                           +- *(5) Sort [o_custkey#67 ASC NULLS FIRST], false, 0
+                              +- Exchange hashpartitioning(o_custkey#67, 200)
+                                 +- *(4) Project [o_orderkey#66, o_custkey#67]
+                                    +- *(4) Project [o_orderkey#66, o_custkey#67, o_comment#74]
+                                       +- *(4) Filter NOT pythonUDF0#859
+                                          +- BatchEvalPython [<lambda>(o_comment#74)], [o_orderkey#66, o_custkey#67, o_comment#74, pythonUDF0#859]
+                                             +- *(3) FileScan orc [o_orderkey#66,o_custkey#67,o_comment#74] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.orc], PartitionFilters: [], PushedFilters: [], ReadSchema: struct<o_orderkey:int,o_custkey:int,o_comment:string>
