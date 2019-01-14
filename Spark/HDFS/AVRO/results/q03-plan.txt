@@ -1,79 +1,26 @@
 
-== Parsed Logical Plan ==
-GlobalLimit 10
-+- LocalLimit 10
-   +- AnalysisBarrier
-         +- Sort [revenue#209 DESC NULLS LAST, o_orderdates#42 ASC NULLS FIRST], true
-            +- Aggregate [l_orderkey#4, o_orderdates#42, o_shippriority#45], [l_orderkey#4, o_orderdates#42, o_shippriority#45, sum(orders_count#199) AS revenue#209]
-               +- Project [l_orderkey#4, if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else UDF(l_extendedprice#9, l_discount#10) AS orders_count#199, o_orderdates#42, o_shippriority#45]
-                  +- Join Inner, (o_orderkey#38 = l_orderkey#4)
-                     :- Project [o_orderkey#38, o_orderdates#42, o_shippriority#45]
-                     :  +- Join Inner, (c_custkey#58 = o_custkey#39)
-                     :     :- Filter (c_mktsegment#64 = FURNITURE)
-                     :     :  +- Relation[c_custkey#58,c_name#59,c_address#60,c_nationkey#61,c_phone#62,c_acctbal#63,c_mktsegment#64,c_comment#65,c_dummy#66] orc
-                     :     +- Filter (o_orderdates#42 < 1995-03-29)
-                     :        +- Relation[o_orderkey#38,o_custkey#39,o_orderstatus#40,o_totalprice#41,o_orderdates#42,o_orderpriority#43,o_clerk#44,o_shippriority#45,o_comment#46,o_dummy#47] orc
-                     +- Filter (l_shipdate#14 > 1995-03-29)
-                        +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
-
-== Analyzed Logical Plan ==
-l_orderkey: int, o_orderdates: string, o_shippriority: int, revenue: double
-GlobalLimit 10
-+- LocalLimit 10
-   +- Sort [revenue#209 DESC NULLS LAST, o_orderdates#42 ASC NULLS FIRST], true
-      +- Aggregate [l_orderkey#4, o_orderdates#42, o_shippriority#45], [l_orderkey#4, o_orderdates#42, o_shippriority#45, sum(orders_count#199) AS revenue#209]
-         +- Project [l_orderkey#4, if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else UDF(l_extendedprice#9, l_discount#10) AS orders_count#199, o_orderdates#42, o_shippriority#45]
-            +- Join Inner, (o_orderkey#38 = l_orderkey#4)
-               :- Project [o_orderkey#38, o_orderdates#42, o_shippriority#45]
-               :  +- Join Inner, (c_custkey#58 = o_custkey#39)
-               :     :- Filter (c_mktsegment#64 = FURNITURE)
-               :     :  +- Relation[c_custkey#58,c_name#59,c_address#60,c_nationkey#61,c_phone#62,c_acctbal#63,c_mktsegment#64,c_comment#65,c_dummy#66] orc
-               :     +- Filter (o_orderdates#42 < 1995-03-29)
-               :        +- Relation[o_orderkey#38,o_custkey#39,o_orderstatus#40,o_totalprice#41,o_orderdates#42,o_orderpriority#43,o_clerk#44,o_shippriority#45,o_comment#46,o_dummy#47] orc
-               +- Filter (l_shipdate#14 > 1995-03-29)
-                  +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
-
-== Optimized Logical Plan ==
-GlobalLimit 10
-+- LocalLimit 10
-   +- Sort [revenue#209 DESC NULLS LAST, o_orderdates#42 ASC NULLS FIRST], true
-      +- Aggregate [l_orderkey#4, o_orderdates#42, o_shippriority#45], [l_orderkey#4, o_orderdates#42, o_shippriority#45, sum(orders_count#199) AS revenue#209]
-         +- Project [l_orderkey#4, if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else UDF(l_extendedprice#9, l_discount#10) AS orders_count#199, o_orderdates#42, o_shippriority#45]
-            +- Join Inner, (o_orderkey#38 = l_orderkey#4)
-               :- Project [o_orderkey#38, o_orderdates#42, o_shippriority#45]
-               :  +- Join Inner, (c_custkey#58 = o_custkey#39)
-               :     :- Project [c_custkey#58]
-               :     :  +- Filter ((isnotnull(c_mktsegment#64) && (c_mktsegment#64 = FURNITURE)) && isnotnull(c_custkey#58))
-               :     :     +- Relation[c_custkey#58,c_name#59,c_address#60,c_nationkey#61,c_phone#62,c_acctbal#63,c_mktsegment#64,c_comment#65,c_dummy#66] orc
-               :     +- Project [o_orderkey#38, o_custkey#39, o_orderdates#42, o_shippriority#45]
-               :        +- Filter (((isnotnull(o_orderdates#42) && (o_orderdates#42 < 1995-03-29)) && isnotnull(o_custkey#39)) && isnotnull(o_orderkey#38))
-               :           +- Relation[o_orderkey#38,o_custkey#39,o_orderstatus#40,o_totalprice#41,o_orderdates#42,o_orderpriority#43,o_clerk#44,o_shippriority#45,o_comment#46,o_dummy#47] orc
-               +- Project [l_orderkey#4, l_extendedprice#9, l_discount#10]
-                  +- Filter ((isnotnull(l_shipdate#14) && (l_shipdate#14 > 1995-03-29)) && isnotnull(l_orderkey#4))
-                     +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
-
 == Physical Plan ==
-TakeOrderedAndProject(limit=10, orderBy=[revenue#209 DESC NULLS LAST,o_orderdates#42 ASC NULLS FIRST], output=[l_orderkey#4,o_orderdates#42,o_shippriority#45,revenue#209])
-+- *(9) HashAggregate(keys=[l_orderkey#4, o_orderdates#42, o_shippriority#45], functions=[sum(orders_count#199)], output=[l_orderkey#4, o_orderdates#42, o_shippriority#45, revenue#209])
-   +- *(9) HashAggregate(keys=[l_orderkey#4, o_orderdates#42, o_shippriority#45], functions=[partial_sum(orders_count#199)], output=[l_orderkey#4, o_orderdates#42, o_shippriority#45, sum#230])
-      +- *(9) Project [l_orderkey#4, if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else UDF(l_extendedprice#9, l_discount#10) AS orders_count#199, o_orderdates#42, o_shippriority#45]
-         +- *(9) SortMergeJoin [o_orderkey#38], [l_orderkey#4], Inner
-            :- *(6) Sort [o_orderkey#38 ASC NULLS FIRST], false, 0
-            :  +- Exchange hashpartitioning(o_orderkey#38, 200)
-            :     +- *(5) Project [o_orderkey#38, o_orderdates#42, o_shippriority#45]
-            :        +- *(5) SortMergeJoin [c_custkey#58], [o_custkey#39], Inner
-            :           :- *(2) Sort [c_custkey#58 ASC NULLS FIRST], false, 0
-            :           :  +- Exchange hashpartitioning(c_custkey#58, 200)
-            :           :     +- *(1) Project [c_custkey#58]
-            :           :        +- *(1) Filter ((isnotnull(c_mktsegment#64) && (c_mktsegment#64 = FURNITURE)) && isnotnull(c_custkey#58))
-            :           :           +- *(1) FileScan orc [c_custkey#58,c_mktsegment#64] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.orc], PartitionFilters: [], PushedFilters: [IsNotNull(c_mktsegment), EqualTo(c_mktsegment,FURNITURE), IsNotNull(c_custkey)], ReadSchema: struct<c_custkey:int,c_mktsegment:string>
-            :           +- *(4) Sort [o_custkey#39 ASC NULLS FIRST], false, 0
-            :              +- Exchange hashpartitioning(o_custkey#39, 200)
-            :                 +- *(3) Project [o_orderkey#38, o_custkey#39, o_orderdates#42, o_shippriority#45]
-            :                    +- *(3) Filter (((isnotnull(o_orderdates#42) && (o_orderdates#42 < 1995-03-29)) && isnotnull(o_custkey#39)) && isnotnull(o_orderkey#38))
-            :                       +- *(3) FileScan orc [o_orderkey#38,o_custkey#39,o_orderdates#42,o_shippriority#45] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.orc], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderdates), LessThan(o_orderdates,1995-03-29), IsNotNull(o_custkey), IsNotNull(o_or..., ReadSchema: struct<o_orderkey:int,o_custkey:int,o_orderdates:string,o_shippriority:int>
-            +- *(8) Sort [l_orderkey#4 ASC NULLS FIRST], false, 0
-               +- Exchange hashpartitioning(l_orderkey#4, 200)
-                  +- *(7) Project [l_orderkey#4, l_extendedprice#9, l_discount#10]
-                     +- *(7) Filter ((isnotnull(l_shipdate#14) && (l_shipdate#14 > 1995-03-29)) && isnotnull(l_orderkey#4))
-                        +- *(7) FileScan orc [l_orderkey#4,l_extendedprice#9,l_discount#10,l_shipdate#14] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_shipdate), GreaterThan(l_shipdate,1995-03-29), IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_extendedprice:double,l_discount:double,l_shipdate:string>
+TakeOrderedAndProject(limit=10, orderBy=[revenue#10067 DESC NULLS LAST,o_orderdates#9747 ASC NULLS FIRST], output=[l_orderkey#9900,o_orderdates#9747,o_shippriority#9750,revenue#10067])
++- *(9) HashAggregate(keys=[l_orderkey#9900, o_orderdates#9747, o_shippriority#9750], functions=[sum(orders_count#10057)])
+   +- *(9) HashAggregate(keys=[l_orderkey#9900, o_orderdates#9747, o_shippriority#9750], functions=[partial_sum(orders_count#10057)])
+      +- *(9) Project [l_orderkey#9900, (l_extendedprice#9905 * (1.0 - l_discount#9906)) AS orders_count#10057, o_orderdates#9747, o_shippriority#9750]
+         +- *(9) SortMergeJoin [o_orderkey#9743], [l_orderkey#9900], Inner
+            :- *(6) Sort [o_orderkey#9743 ASC NULLS FIRST], false, 0
+            :  +- Exchange hashpartitioning(o_orderkey#9743, 200)
+            :     +- *(5) Project [o_orderkey#9743, o_orderdates#9747, o_shippriority#9750]
+            :        +- *(5) SortMergeJoin [c_custkey#9766], [o_custkey#9744], Inner
+            :           :- *(2) Sort [c_custkey#9766 ASC NULLS FIRST], false, 0
+            :           :  +- Exchange hashpartitioning(c_custkey#9766, 200)
+            :           :     +- *(1) Project [c_custkey#9766]
+            :           :        +- *(1) Filter ((isnotnull(c_mktsegment#9772) && (c_mktsegment#9772 = FURNITURE)) && isnotnull(c_custkey#9766))
+            :           :           +- *(1) FileScan avro [c_custkey#9766,c_mktsegment#9772] Batched: false, Format: com.databricks.spark.avro.DefaultSource@78c9fd24, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.avro], PartitionFilters: [], PushedFilters: [IsNotNull(c_mktsegment), EqualTo(c_mktsegment,FURNITURE), IsNotNull(c_custkey)], ReadSchema: struct<c_custkey:int,c_mktsegment:string>
+            :           +- *(4) Sort [o_custkey#9744 ASC NULLS FIRST], false, 0
+            :              +- Exchange hashpartitioning(o_custkey#9744, 200)
+            :                 +- *(3) Project [o_orderkey#9743, o_custkey#9744, o_orderdates#9747, o_shippriority#9750]
+            :                    +- *(3) Filter (((isnotnull(o_orderdates#9747) && (o_orderdates#9747 < 1995-03-29)) && isnotnull(o_custkey#9744)) && isnotnull(o_orderkey#9743))
+            :                       +- *(3) FileScan avro [o_orderkey#9743,o_custkey#9744,o_orderdates#9747,o_shippriority#9750] Batched: false, Format: com.databricks.spark.avro.DefaultSource@221b3415, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.avro], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderdates), LessThan(o_orderdates,1995-03-29), IsNotNull(o_custkey), IsNotNull(o_or..., ReadSchema: struct<o_orderkey:int,o_custkey:int,o_orderdates:string,o_shippriority:int>
+            +- *(8) Sort [l_orderkey#9900 ASC NULLS FIRST], false, 0
+               +- Exchange hashpartitioning(l_orderkey#9900, 200)
+                  +- *(7) Project [l_orderkey#9900, l_extendedprice#9905, l_discount#9906]
+                     +- *(7) Filter ((isnotnull(l_shipdate#9910) && (l_shipdate#9910 > 1995-03-29)) && isnotnull(l_orderkey#9900))
+                        +- *(7) FileScan avro [l_orderkey#9900,l_extendedprice#9905,l_discount#9906,l_shipdate#9910] Batched: false, Format: com.databricks.spark.avro.DefaultSource@1265e3e0, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.avro], PartitionFilters: [], PushedFilters: [IsNotNull(l_shipdate), GreaterThan(l_shipdate,1995-03-29), IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_extendedprice:double,l_discount:double,l_shipdate:string>

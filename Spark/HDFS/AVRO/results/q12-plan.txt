@@ -1,52 +1,19 @@
-
-== Parsed Logical Plan ==
-'Sort ['l_shipmode ASC NULLS FIRST], true
-+- AnalysisBarrier
-      +- Aggregate [l_shipmode#18], [l_shipmode#18, sum(cast(UDF(o_orderpriority#43) as bigint)) AS sum_highorderpriority#604L, sum(cast(UDF(o_orderpriority#43) as bigint)) AS sum_loworderpriority#606L]
-         +- Project [l_shipmode#18, o_orderpriority#43]
-            +- Join Inner, (l_orderkey#4 = o_orderkey#38)
-               :- Filter ((((((l_shipmode#18 = FOB) || (l_shipmode#18 = SHIP)) && (l_commitdate#15 < l_receiptdate#16)) && (l_shipdate#14 < l_commitdate#15)) && (l_receiptdate#16 >= 1994-01-01)) && (l_receiptdate#16 < 1995-01-01))
-               :  +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
-               +- Relation[o_orderkey#38,o_custkey#39,o_orderstatus#40,o_totalprice#41,o_orderdates#42,o_orderpriority#43,o_clerk#44,o_shippriority#45,o_comment#46,o_dummy#47] orc
-
-== Analyzed Logical Plan ==
-l_shipmode: string, sum_highorderpriority: bigint, sum_loworderpriority: bigint
-Sort [l_shipmode#18 ASC NULLS FIRST], true
-+- Aggregate [l_shipmode#18], [l_shipmode#18, sum(cast(UDF(o_orderpriority#43) as bigint)) AS sum_highorderpriority#604L, sum(cast(UDF(o_orderpriority#43) as bigint)) AS sum_loworderpriority#606L]
-   +- Project [l_shipmode#18, o_orderpriority#43]
-      +- Join Inner, (l_orderkey#4 = o_orderkey#38)
-         :- Filter ((((((l_shipmode#18 = FOB) || (l_shipmode#18 = SHIP)) && (l_commitdate#15 < l_receiptdate#16)) && (l_shipdate#14 < l_commitdate#15)) && (l_receiptdate#16 >= 1994-01-01)) && (l_receiptdate#16 < 1995-01-01))
-         :  +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
-         +- Relation[o_orderkey#38,o_custkey#39,o_orderstatus#40,o_totalprice#41,o_orderdates#42,o_orderpriority#43,o_clerk#44,o_shippriority#45,o_comment#46,o_dummy#47] orc
-
-== Optimized Logical Plan ==
-Sort [l_shipmode#18 ASC NULLS FIRST], true
-+- Aggregate [l_shipmode#18], [l_shipmode#18, sum(cast(UDF(o_orderpriority#43) as bigint)) AS sum_highorderpriority#604L, sum(cast(UDF(o_orderpriority#43) as bigint)) AS sum_loworderpriority#606L]
-   +- Project [l_shipmode#18, o_orderpriority#43]
-      +- Join Inner, (l_orderkey#4 = o_orderkey#38)
-         :- Project [l_orderkey#4, l_shipmode#18]
-         :  +- Filter ((((((((isnotnull(l_shipdate#14) && isnotnull(l_commitdate#15)) && isnotnull(l_receiptdate#16)) && ((l_shipmode#18 = FOB) || (l_shipmode#18 = SHIP))) && (l_commitdate#15 < l_receiptdate#16)) && (l_shipdate#14 < l_commitdate#15)) && (l_receiptdate#16 >= 1994-01-01)) && (l_receiptdate#16 < 1995-01-01)) && isnotnull(l_orderkey#4))
-         :     +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
-         +- Project [o_orderkey#38, o_orderpriority#43]
-            +- Filter isnotnull(o_orderkey#38)
-               +- Relation[o_orderkey#38,o_custkey#39,o_orderstatus#40,o_totalprice#41,o_orderdates#42,o_orderpriority#43,o_clerk#44,o_shippriority#45,o_comment#46,o_dummy#47] orc
-
 == Physical Plan ==
-*(7) Sort [l_shipmode#18 ASC NULLS FIRST], true, 0
-+- Exchange rangepartitioning(l_shipmode#18 ASC NULLS FIRST, 200)
-   +- *(6) HashAggregate(keys=[l_shipmode#18], functions=[sum(cast(UDF(o_orderpriority#43) as bigint)), sum(cast(UDF(o_orderpriority#43) as bigint))], output=[l_shipmode#18, sum_highorderpriority#604L, sum_loworderpriority#606L])
-      +- Exchange hashpartitioning(l_shipmode#18, 200)
-         +- *(5) HashAggregate(keys=[l_shipmode#18], functions=[partial_sum(cast(UDF(o_orderpriority#43) as bigint)), partial_sum(cast(UDF(o_orderpriority#43) as bigint))], output=[l_shipmode#18, sum#623L, sum#624L])
-            +- *(5) Project [l_shipmode#18, o_orderpriority#43]
-               +- *(5) SortMergeJoin [l_orderkey#4], [o_orderkey#38], Inner
-                  :- *(2) Sort [l_orderkey#4 ASC NULLS FIRST], false, 0
-                  :  +- Exchange hashpartitioning(l_orderkey#4, 200)
-                  :     +- *(1) Project [l_orderkey#4, l_shipmode#18]
-                  :        +- *(1) Filter ((((((((isnotnull(l_shipdate#14) && isnotnull(l_commitdate#15)) && isnotnull(l_receiptdate#16)) && ((l_shipmode#18 = FOB) || (l_shipmode#18 = SHIP))) && (l_commitdate#15 < l_receiptdate#16)) && (l_shipdate#14 < l_commitdate#15)) && (l_receiptdate#16 >= 1994-01-01)) && (l_receiptdate#16 < 1995-01-01)) && isnotnull(l_orderkey#4))
-                  :           +- *(1) FileScan orc [l_orderkey#4,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipmode#18] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_shipdate), IsNotNull(l_commitdate), IsNotNull(l_receiptdate), Or(EqualTo(l_shipmode,..., ReadSchema: struct<l_orderkey:int,l_shipdate:string,l_commitdate:string,l_receiptdate:string,l_shipmode:string>
-                  +- *(4) Sort [o_orderkey#38 ASC NULLS FIRST], false, 0
-                     +- Exchange hashpartitioning(o_orderkey#38, 200)
-                        +- *(3) Project [o_orderkey#38, o_orderpriority#43]
-                           +- *(3) Filter isnotnull(o_orderkey#38)
-                              +- *(3) FileScan orc [o_orderkey#38,o_orderpriority#43] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.orc], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderkey)], ReadSchema: struct<o_orderkey:int,o_orderpriority:string>
-
+*(8) Sort [l_shipmode#70 ASC NULLS FIRST], true, 0
++- Exchange rangepartitioning(l_shipmode#70 ASC NULLS FIRST, 200)
+   +- *(7) HashAggregate(keys=[l_shipmode#70], functions=[sum(cast(<lambda>(o_orderpriority#95) as bigint)), sum(cast(<lambda>(o_orderpriority#95) as bigint))])
+      +- Exchange hashpartitioning(l_shipmode#70, 200)
+         +- *(6) HashAggregate(keys=[l_shipmode#70], functions=[partial_sum(cast(pythonUDF0#45070 as bigint)), partial_sum(cast(pythonUDF1#45071 as bigint))])
+            +- BatchEvalPython [<lambda>(o_orderpriority#95), <lambda>(o_orderpriority#95)], [l_shipmode#70, o_orderpriority#95, pythonUDF0#45070, pythonUDF1#45071]
+               +- *(5) Project [l_shipmode#70, o_orderpriority#95]
+                  +- *(5) SortMergeJoin [l_orderkey#56], [o_orderkey#90], Inner
+                     :- *(2) Sort [l_orderkey#56 ASC NULLS FIRST], false, 0
+                     :  +- Exchange hashpartitioning(l_orderkey#56, 200)
+                     :     +- *(1) Project [l_orderkey#56, l_shipmode#70]
+                     :        +- *(1) Filter ((((((((isnotnull(l_commitdate#67) && isnotnull(l_receiptdate#68)) && isnotnull(l_shipdate#66)) && ((l_shipmode#70 = FOB) || (l_shipmode#70 = SHIP))) && (l_commitdate#67 < l_receiptdate#68)) && (l_shipdate#66 < l_commitdate#67)) && (l_receiptdate#68 >= 1994-01-01)) && (l_receiptdate#68 < 1995-01-01)) && isnotnull(l_orderkey#56))
+                     :           +- *(1) FileScan avro [l_orderkey#56,l_shipdate#66,l_commitdate#67,l_receiptdate#68,l_shipmode#70] Batched: false, Format: com.databricks.spark.avro.DefaultSource@7bfb5a4, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.avro], PartitionFilters: [], PushedFilters: [IsNotNull(l_commitdate), IsNotNull(l_receiptdate), IsNotNull(l_shipdate), Or(EqualTo(l_shipmode,..., ReadSchema: struct<l_orderkey:int,l_shipdate:string,l_commitdate:string,l_receiptdate:string,l_shipmode:string>
+                     +- *(4) Sort [o_orderkey#90 ASC NULLS FIRST], false, 0
+                        +- Exchange hashpartitioning(o_orderkey#90, 200)
+                           +- *(3) Project [o_orderkey#90, o_orderpriority#95]
+                              +- *(3) Filter isnotnull(o_orderkey#90)
+                                 +- *(3) FileScan avro [o_orderkey#90,o_orderpriority#95] Batched: false, Format: com.databricks.spark.avro.DefaultSource@6fb4750c, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.avro], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderkey)], ReadSchema: struct<o_orderkey:int,o_orderpriority:string>

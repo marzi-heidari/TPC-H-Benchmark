@@ -1,58 +1,21 @@
-== Parsed Logical Plan ==
-'Sort ['o_orderpriority ASC NULLS FIRST], true
-+- AnalysisBarrier
-      +- Aggregate [o_orderpriority#43], [o_orderpriority#43, count(o_orderpriority#43) AS count(o_orderpriority)#316L]
-         +- Join Inner, (l_orderkey#4 = o_orderkey#38)
-            :- Deduplicate [l_orderkey#4]
-            :  +- Project [l_orderkey#4]
-            :     +- Filter (l_commitdate#15 < l_receiptdate#16)
-            :        +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
-            +- Filter ((o_orderdates#42 >= 1993-07-01) && (o_orderdates#42 < 1993-10-01))
-               +- Relation[o_orderkey#38,o_custkey#39,o_orderstatus#40,o_totalprice#41,o_orderdates#42,o_orderpriority#43,o_clerk#44,o_shippriority#45,o_comment#46,o_dummy#47] orc
-
-== Analyzed Logical Plan ==
-o_orderpriority: string, count(o_orderpriority): bigint
-Sort [o_orderpriority#43 ASC NULLS FIRST], true
-+- Aggregate [o_orderpriority#43], [o_orderpriority#43, count(o_orderpriority#43) AS count(o_orderpriority)#316L]
-   +- Join Inner, (l_orderkey#4 = o_orderkey#38)
-      :- Deduplicate [l_orderkey#4]
-      :  +- Project [l_orderkey#4]
-      :     +- Filter (l_commitdate#15 < l_receiptdate#16)
-      :        +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
-      +- Filter ((o_orderdates#42 >= 1993-07-01) && (o_orderdates#42 < 1993-10-01))
-         +- Relation[o_orderkey#38,o_custkey#39,o_orderstatus#40,o_totalprice#41,o_orderdates#42,o_orderpriority#43,o_clerk#44,o_shippriority#45,o_comment#46,o_dummy#47] orc
-
-== Optimized Logical Plan ==
-Sort [o_orderpriority#43 ASC NULLS FIRST], true
-+- Aggregate [o_orderpriority#43], [o_orderpriority#43, count(o_orderpriority#43) AS count(o_orderpriority)#316L]
-   +- Project [o_orderpriority#43]
-      +- Join Inner, (l_orderkey#4 = o_orderkey#38)
-         :- Aggregate [l_orderkey#4], [l_orderkey#4]
-         :  +- Project [l_orderkey#4]
-         :     +- Filter (((isnotnull(l_commitdate#15) && isnotnull(l_receiptdate#16)) && (l_commitdate#15 < l_receiptdate#16)) && isnotnull(l_orderkey#4))
-         :        +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
-         +- Project [o_orderkey#38, o_orderpriority#43]
-            +- Filter (((isnotnull(o_orderdates#42) && (o_orderdates#42 >= 1993-07-01)) && (o_orderdates#42 < 1993-10-01)) && isnotnull(o_orderkey#38))
-               +- Relation[o_orderkey#38,o_custkey#39,o_orderstatus#40,o_totalprice#41,o_orderdates#42,o_orderpriority#43,o_clerk#44,o_shippriority#45,o_comment#46,o_dummy#47] orc
 
 == Physical Plan ==
-*(7) Sort [o_orderpriority#43 ASC NULLS FIRST], true, 0
-+- Exchange rangepartitioning(o_orderpriority#43 ASC NULLS FIRST, 200)
-   +- *(6) HashAggregate(keys=[o_orderpriority#43], functions=[count(o_orderpriority#43)], output=[o_orderpriority#43, count(o_orderpriority)#316L])
-      +- Exchange hashpartitioning(o_orderpriority#43, 200)
-         +- *(5) HashAggregate(keys=[o_orderpriority#43], functions=[partial_count(o_orderpriority#43)], output=[o_orderpriority#43, count#328L])
-            +- *(5) Project [o_orderpriority#43]
-               +- *(5) SortMergeJoin [l_orderkey#4], [o_orderkey#38], Inner
-                  :- *(2) Sort [l_orderkey#4 ASC NULLS FIRST], false, 0
-                  :  +- *(2) HashAggregate(keys=[l_orderkey#4], functions=[], output=[l_orderkey#4])
-                  :     +- Exchange hashpartitioning(l_orderkey#4, 200)
-                  :        +- *(1) HashAggregate(keys=[l_orderkey#4], functions=[], output=[l_orderkey#4])
-                  :           +- *(1) Project [l_orderkey#4]
-                  :              +- *(1) Filter (((isnotnull(l_commitdate#15) && isnotnull(l_receiptdate#16)) && (l_commitdate#15 < l_receiptdate#16)) && isnotnull(l_orderkey#4))
-                  :                 +- *(1) FileScan orc [l_orderkey#4,l_commitdate#15,l_receiptdate#16] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_commitdate), IsNotNull(l_receiptdate), IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_commitdate:string,l_receiptdate:string>
-                  +- *(4) Sort [o_orderkey#38 ASC NULLS FIRST], false, 0
-                     +- Exchange hashpartitioning(o_orderkey#38, 200)
-                        +- *(3) Project [o_orderkey#38, o_orderpriority#43]
-                           +- *(3) Filter (((isnotnull(o_orderdates#42) && (o_orderdates#42 >= 1993-07-01)) && (o_orderdates#42 < 1993-10-01)) && isnotnull(o_orderkey#38))
-                              +- *(3) FileScan orc [o_orderkey#38,o_orderdates#42,o_orderpriority#43] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.orc], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderdates), GreaterThanOrEqual(o_orderdates,1993-07-01), LessThan(o_orderdates,1993..., ReadSchema: struct<o_orderkey:int,o_orderdates:string,o_orderpriority:string>
-
+*(7) Sort [o_orderpriority#9748 ASC NULLS FIRST], true, 0
++- Exchange rangepartitioning(o_orderpriority#9748 ASC NULLS FIRST, 200)
+   +- *(6) HashAggregate(keys=[o_orderpriority#9748], functions=[count(o_orderpriority#9748)])
+      +- Exchange hashpartitioning(o_orderpriority#9748, 200)
+         +- *(5) HashAggregate(keys=[o_orderpriority#9748], functions=[partial_count(o_orderpriority#9748)])
+            +- *(5) Project [o_orderpriority#9748]
+               +- *(5) SortMergeJoin [l_orderkey#9900], [o_orderkey#9743], Inner
+                  :- *(2) Sort [l_orderkey#9900 ASC NULLS FIRST], false, 0
+                  :  +- *(2) HashAggregate(keys=[l_orderkey#9900], functions=[])
+                  :     +- Exchange hashpartitioning(l_orderkey#9900, 200)
+                  :        +- *(1) HashAggregate(keys=[l_orderkey#9900], functions=[])
+                  :           +- *(1) Project [l_orderkey#9900]
+                  :              +- *(1) Filter (((isnotnull(l_commitdate#9911) && isnotnull(l_receiptdate#9912)) && (l_commitdate#9911 < l_receiptdate#9912)) && isnotnull(l_orderkey#9900))
+                  :                 +- *(1) FileScan avro [l_orderkey#9900,l_commitdate#9911,l_receiptdate#9912] Batched: false, Format: com.databricks.spark.avro.DefaultSource@1265e3e0, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.avro], PartitionFilters: [], PushedFilters: [IsNotNull(l_commitdate), IsNotNull(l_receiptdate), IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_commitdate:string,l_receiptdate:string>
+                  +- *(4) Sort [o_orderkey#9743 ASC NULLS FIRST], false, 0
+                     +- Exchange hashpartitioning(o_orderkey#9743, 200)
+                        +- *(3) Project [o_orderkey#9743, o_orderpriority#9748]
+                           +- *(3) Filter (((isnotnull(o_orderdates#9747) && (o_orderdates#9747 >= 1993-07-01)) && (o_orderdates#9747 < 1993-10-01)) && isnotnull(o_orderkey#9743))
+                              +- *(3) FileScan avro [o_orderkey#9743,o_orderdates#9747,o_orderpriority#9748] Batched: false, Format: com.databricks.spark.avro.DefaultSource@221b3415, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.avro], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderdates), GreaterThanOrEqual(o_orderdates,1993-07-01), LessThan(o_orderdates,1993..., ReadSchema: struct<o_orderkey:int,o_orderdates:string,o_orderpriority:string>

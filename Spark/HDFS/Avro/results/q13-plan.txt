@@ -1,0 +1,22 @@
+
+== Physical Plan ==
+*(9) Sort [custdist#45157L DESC NULLS LAST, c_count#45151L DESC NULLS LAST], true, 0
++- Exchange rangepartitioning(custdist#45157L DESC NULLS LAST, c_count#45151L DESC NULLS LAST, 200)
+   +- *(8) HashAggregate(keys=[c_count#45151L], functions=[count(o_custkey#91)])
+      +- Exchange hashpartitioning(c_count#45151L, 200)
+         +- *(7) HashAggregate(keys=[c_count#45151L], functions=[partial_count(o_custkey#91)])
+            +- *(7) HashAggregate(keys=[o_custkey#91], functions=[count(o_orderkey#90)])
+               +- Exchange hashpartitioning(o_custkey#91, 200)
+                  +- *(6) HashAggregate(keys=[o_custkey#91], functions=[partial_count(o_orderkey#90)])
+                     +- *(6) Project [o_orderkey#90, o_custkey#91]
+                        +- SortMergeJoin [c_custkey#110], [o_custkey#91], LeftOuter
+                           :- *(2) Sort [c_custkey#110 ASC NULLS FIRST], false, 0
+                           :  +- Exchange hashpartitioning(c_custkey#110, 200)
+                           :     +- *(1) FileScan avro [c_custkey#110] Batched: false, Format: com.databricks.spark.avro.DefaultSource@4c50e846, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.avro], PartitionFilters: [], PushedFilters: [], ReadSchema: struct<c_custkey:int>
+                           +- *(5) Sort [o_custkey#91 ASC NULLS FIRST], false, 0
+                              +- Exchange hashpartitioning(o_custkey#91, 200)
+                                 +- *(4) Project [o_orderkey#90, o_custkey#91]
+                                    +- *(4) Project [o_orderkey#90, o_custkey#91, o_comment#98]
+                                       +- *(4) Filter NOT pythonUDF0#46845
+                                          +- BatchEvalPython [<lambda>(o_comment#98)], [o_orderkey#90, o_custkey#91, o_comment#98, pythonUDF0#46845]
+                                             +- *(3) FileScan avro [o_orderkey#90,o_custkey#91,o_comment#98] Batched: false, Format: com.databricks.spark.avro.DefaultSource@6fb4750c, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.avro], PartitionFilters: [], PushedFilters: [], ReadSchema: struct<o_orderkey:int,o_custkey:int,o_comment:string>

@@ -1,91 +1,33 @@
 
-== Parsed Logical Plan ==
-GlobalLimit 20
-+- LocalLimit 20
-   +- AnalysisBarrier
-         +- Sort [revenue#350 DESC NULLS LAST], true
-            +- Aggregate [c_custkey#58, c_name#59, c_acctbal#63, c_phone#62, n_name#77, c_address#60, c_comment#65], [c_custkey#58, c_name#59, c_acctbal#63, c_phone#62, n_name#77, c_address#60, c_comment#65, sum(volume#332) AS revenue#350]
-               +- Project [c_custkey#58, c_name#59, if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else UDF(l_extendedprice#9, l_discount#10) AS volume#332, c_acctbal#63, n_name#77, c_address#60, c_phone#62, c_comment#65]
-                  +- Join Inner, (o_orderkey#38 = l_orderkey#4)
-                     :- Join Inner, (c_nationkey#61 = n_nationkey#76)
-                     :  :- Join Inner, (o_custkey#39 = c_custkey#58)
-                     :  :  :- Filter ((o_orderdates#42 < 1994-01-01) && (o_orderdates#42 >= 1993-10-01))
-                     :  :  :  +- Relation[o_orderkey#38,o_custkey#39,o_orderstatus#40,o_totalprice#41,o_orderdates#42,o_orderpriority#43,o_clerk#44,o_shippriority#45,o_comment#46,o_dummy#47] orc
-                     :  :  +- Relation[c_custkey#58,c_name#59,c_address#60,c_nationkey#61,c_phone#62,c_acctbal#63,c_mktsegment#64,c_comment#65,c_dummy#66] orc
-                     :  +- Relation[n_nationkey#76,n_name#77,n_regionkey#78,n_comment#79] orc
-                     +- Filter (l_returnflag#12 = R)
-                        +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
-
-== Analyzed Logical Plan ==
-c_custkey: int, c_name: string, c_acctbal: double, c_phone: string, n_name: string, c_address: string, c_comment: string, revenue: double
-GlobalLimit 20
-+- LocalLimit 20
-   +- Sort [revenue#350 DESC NULLS LAST], true
-      +- Aggregate [c_custkey#58, c_name#59, c_acctbal#63, c_phone#62, n_name#77, c_address#60, c_comment#65], [c_custkey#58, c_name#59, c_acctbal#63, c_phone#62, n_name#77, c_address#60, c_comment#65, sum(volume#332) AS revenue#350]
-         +- Project [c_custkey#58, c_name#59, if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else UDF(l_extendedprice#9, l_discount#10) AS volume#332, c_acctbal#63, n_name#77, c_address#60, c_phone#62, c_comment#65]
-            +- Join Inner, (o_orderkey#38 = l_orderkey#4)
-               :- Join Inner, (c_nationkey#61 = n_nationkey#76)
-               :  :- Join Inner, (o_custkey#39 = c_custkey#58)
-               :  :  :- Filter ((o_orderdates#42 < 1994-01-01) && (o_orderdates#42 >= 1993-10-01))
-               :  :  :  +- Relation[o_orderkey#38,o_custkey#39,o_orderstatus#40,o_totalprice#41,o_orderdates#42,o_orderpriority#43,o_clerk#44,o_shippriority#45,o_comment#46,o_dummy#47] orc
-               :  :  +- Relation[c_custkey#58,c_name#59,c_address#60,c_nationkey#61,c_phone#62,c_acctbal#63,c_mktsegment#64,c_comment#65,c_dummy#66] orc
-               :  +- Relation[n_nationkey#76,n_name#77,n_regionkey#78,n_comment#79] orc
-               +- Filter (l_returnflag#12 = R)
-                  +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
-
-== Optimized Logical Plan ==
-GlobalLimit 20
-+- LocalLimit 20
-   +- Sort [revenue#350 DESC NULLS LAST], true
-      +- Aggregate [c_custkey#58, c_name#59, c_acctbal#63, c_phone#62, n_name#77, c_address#60, c_comment#65], [c_custkey#58, c_name#59, c_acctbal#63, c_phone#62, n_name#77, c_address#60, c_comment#65, sum(volume#332) AS revenue#350]
-         +- Project [c_custkey#58, c_name#59, if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else UDF(l_extendedprice#9, l_discount#10) AS volume#332, c_acctbal#63, n_name#77, c_address#60, c_phone#62, c_comment#65]
-            +- Join Inner, (o_orderkey#38 = l_orderkey#4)
-               :- Project [o_orderkey#38, c_custkey#58, c_name#59, c_address#60, c_phone#62, c_acctbal#63, c_comment#65, n_name#77]
-               :  +- Join Inner, (c_nationkey#61 = n_nationkey#76)
-               :     :- Project [o_orderkey#38, c_custkey#58, c_name#59, c_address#60, c_nationkey#61, c_phone#62, c_acctbal#63, c_comment#65]
-               :     :  +- Join Inner, (o_custkey#39 = c_custkey#58)
-               :     :     :- Project [o_orderkey#38, o_custkey#39]
-               :     :     :  +- Filter ((((isnotnull(o_orderdates#42) && (o_orderdates#42 < 1994-01-01)) && (o_orderdates#42 >= 1993-10-01)) && isnotnull(o_custkey#39)) && isnotnull(o_orderkey#38))
-               :     :     :     +- Relation[o_orderkey#38,o_custkey#39,o_orderstatus#40,o_totalprice#41,o_orderdates#42,o_orderpriority#43,o_clerk#44,o_shippriority#45,o_comment#46,o_dummy#47] orc
-               :     :     +- Project [c_custkey#58, c_name#59, c_address#60, c_nationkey#61, c_phone#62, c_acctbal#63, c_comment#65]
-               :     :        +- Filter (isnotnull(c_custkey#58) && isnotnull(c_nationkey#61))
-               :     :           +- Relation[c_custkey#58,c_name#59,c_address#60,c_nationkey#61,c_phone#62,c_acctbal#63,c_mktsegment#64,c_comment#65,c_dummy#66] orc
-               :     +- Project [n_nationkey#76, n_name#77]
-               :        +- Filter isnotnull(n_nationkey#76)
-               :           +- Relation[n_nationkey#76,n_name#77,n_regionkey#78,n_comment#79] orc
-               +- Project [l_orderkey#4, l_extendedprice#9, l_discount#10]
-                  +- Filter ((isnotnull(l_returnflag#12) && (l_returnflag#12 = R)) && isnotnull(l_orderkey#4))
-                     +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
-
 == Physical Plan ==
-TakeOrderedAndProject(limit=20, orderBy=[revenue#350 DESC NULLS LAST], output=[c_custkey#58,c_name#59,c_acctbal#63,c_phone#62,n_name#77,c_address#60,c_comment#65,revenue#350])
-+- *(11) HashAggregate(keys=[c_custkey#58, c_name#59, c_acctbal#63, c_phone#62, n_name#77, c_address#60, c_comment#65], functions=[sum(volume#332)], output=[c_custkey#58, c_name#59, c_acctbal#63, c_phone#62, n_name#77, c_address#60, c_comment#65, revenue#350])
-   +- Exchange hashpartitioning(c_custkey#58, c_name#59, c_acctbal#63, c_phone#62, n_name#77, c_address#60, c_comment#65, 200)
-      +- *(10) HashAggregate(keys=[c_custkey#58, c_name#59, c_acctbal#63, c_phone#62, n_name#77, c_address#60, c_comment#65], functions=[partial_sum(volume#332)], output=[c_custkey#58, c_name#59, c_acctbal#63, c_phone#62, n_name#77, c_address#60, c_comment#65, sum#387])
-         +- *(10) Project [c_custkey#58, c_name#59, if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else if ((isnull(l_extendedprice#9) || isnull(l_discount#10))) null else UDF(l_extendedprice#9, l_discount#10) AS volume#332, c_acctbal#63, n_name#77, c_address#60, c_phone#62, c_comment#65]
-            +- *(10) SortMergeJoin [o_orderkey#38], [l_orderkey#4], Inner
-               :- *(7) Sort [o_orderkey#38 ASC NULLS FIRST], false, 0
-               :  +- Exchange hashpartitioning(o_orderkey#38, 200)
-               :     +- *(6) Project [o_orderkey#38, c_custkey#58, c_name#59, c_address#60, c_phone#62, c_acctbal#63, c_comment#65, n_name#77]
-               :        +- *(6) BroadcastHashJoin [c_nationkey#61], [n_nationkey#76], Inner, BuildRight
-               :           :- *(6) Project [o_orderkey#38, c_custkey#58, c_name#59, c_address#60, c_nationkey#61, c_phone#62, c_acctbal#63, c_comment#65]
-               :           :  +- *(6) SortMergeJoin [o_custkey#39], [c_custkey#58], Inner
-               :           :     :- *(2) Sort [o_custkey#39 ASC NULLS FIRST], false, 0
-               :           :     :  +- Exchange hashpartitioning(o_custkey#39, 200)
-               :           :     :     +- *(1) Project [o_orderkey#38, o_custkey#39]
-               :           :     :        +- *(1) Filter ((((isnotnull(o_orderdates#42) && (o_orderdates#42 < 1994-01-01)) && (o_orderdates#42 >= 1993-10-01)) && isnotnull(o_custkey#39)) && isnotnull(o_orderkey#38))
-               :           :     :           +- *(1) FileScan orc [o_orderkey#38,o_custkey#39,o_orderdates#42] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.orc], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderdates), LessThan(o_orderdates,1994-01-01), GreaterThanOrEqual(o_orderdates,1993..., ReadSchema: struct<o_orderkey:int,o_custkey:int,o_orderdates:string>
-               :           :     +- *(4) Sort [c_custkey#58 ASC NULLS FIRST], false, 0
-               :           :        +- Exchange hashpartitioning(c_custkey#58, 200)
-               :           :           +- *(3) Project [c_custkey#58, c_name#59, c_address#60, c_nationkey#61, c_phone#62, c_acctbal#63, c_comment#65]
-               :           :              +- *(3) Filter (isnotnull(c_custkey#58) && isnotnull(c_nationkey#61))
-               :           :                 +- *(3) FileScan orc [c_custkey#58,c_name#59,c_address#60,c_nationkey#61,c_phone#62,c_acctbal#63,c_comment#65] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.orc], PartitionFilters: [], PushedFilters: [IsNotNull(c_custkey), IsNotNull(c_nationkey)], ReadSchema: struct<c_custkey:int,c_name:string,c_address:string,c_nationkey:int,c_phone:string,c_acctbal:doub...
+TakeOrderedAndProject(limit=20, orderBy=[revenue#17637 DESC NULLS LAST], output=[c_custkey#110,c_name#111,c_acctbal#115,c_phone#114,n_name#49,c_address#112,c_comment#117,revenue#17637])
++- *(11) HashAggregate(keys=[c_custkey#110, c_name#111, c_acctbal#115, c_phone#114, n_name#49, c_address#112, c_comment#117], functions=[sum(volume#17619)])
+   +- Exchange hashpartitioning(c_custkey#110, c_name#111, c_acctbal#115, c_phone#114, n_name#49, c_address#112, c_comment#117, 200)
+      +- *(10) HashAggregate(keys=[c_custkey#110, c_name#111, c_acctbal#115, c_phone#114, n_name#49, c_address#112, c_comment#117], functions=[partial_sum(volume#17619)])
+         +- *(10) Project [c_custkey#110, c_name#111, (l_extendedprice#61 * (1.0 - l_discount#62)) AS volume#17619, c_acctbal#115, n_name#49, c_address#112, c_phone#114, c_comment#117]
+            +- *(10) SortMergeJoin [o_orderkey#90], [l_orderkey#56], Inner
+               :- *(7) Sort [o_orderkey#90 ASC NULLS FIRST], false, 0
+               :  +- Exchange hashpartitioning(o_orderkey#90, 200)
+               :     +- *(6) Project [o_orderkey#90, c_custkey#110, c_name#111, c_address#112, c_phone#114, c_acctbal#115, c_comment#117, n_name#49]
+               :        +- *(6) BroadcastHashJoin [c_nationkey#113], [n_nationkey#48], Inner, BuildRight
+               :           :- *(6) Project [o_orderkey#90, c_custkey#110, c_name#111, c_address#112, c_nationkey#113, c_phone#114, c_acctbal#115, c_comment#117]
+               :           :  +- *(6) SortMergeJoin [o_custkey#91], [c_custkey#110], Inner
+               :           :     :- *(2) Sort [o_custkey#91 ASC NULLS FIRST], false, 0
+               :           :     :  +- Exchange hashpartitioning(o_custkey#91, 200)
+               :           :     :     +- *(1) Project [o_orderkey#90, o_custkey#91]
+               :           :     :        +- *(1) Filter ((((isnotnull(o_orderdates#94) && (o_orderdates#94 < 1994-01-01)) && (o_orderdates#94 >= 1993-10-01)) && isnotnull(o_custkey#91)) && isnotnull(o_orderkey#90))
+               :           :     :           +- *(1) FileScan avro [o_orderkey#90,o_custkey#91,o_orderdates#94] Batched: false, Format: com.databricks.spark.avro.DefaultSource@6fb4750c, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.avro], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderdates), LessThan(o_orderdates,1994-01-01), GreaterThanOrEqual(o_orderdates,1993..., ReadSchema: struct<o_orderkey:int,o_custkey:int,o_orderdates:string>
+               :           :     +- *(4) Sort [c_custkey#110 ASC NULLS FIRST], false, 0
+               :           :        +- Exchange hashpartitioning(c_custkey#110, 200)
+               :           :           +- *(3) Project [c_custkey#110, c_name#111, c_address#112, c_nationkey#113, c_phone#114, c_acctbal#115, c_comment#117]
+               :           :              +- *(3) Filter (isnotnull(c_custkey#110) && isnotnull(c_nationkey#113))
+               :           :                 +- *(3) FileScan avro [c_custkey#110,c_name#111,c_address#112,c_nationkey#113,c_phone#114,c_acctbal#115,c_comment#117] Batched: false, Format: com.databricks.spark.avro.DefaultSource@4c50e846, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.avro], PartitionFilters: [], PushedFilters: [IsNotNull(c_custkey), IsNotNull(c_nationkey)], ReadSchema: struct<c_custkey:int,c_name:string,c_address:string,c_nationkey:int,c_phone:string,c_acctbal:doub...
                :           +- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[0, int, true] as bigint)))
-               :              +- *(5) Project [n_nationkey#76, n_name#77]
-               :                 +- *(5) Filter isnotnull(n_nationkey#76)
-               :                    +- *(5) FileScan orc [n_nationkey#76,n_name#77] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/nation.orc], PartitionFilters: [], PushedFilters: [IsNotNull(n_nationkey)], ReadSchema: struct<n_nationkey:int,n_name:string>
-               +- *(9) Sort [l_orderkey#4 ASC NULLS FIRST], false, 0
-                  +- Exchange hashpartitioning(l_orderkey#4, 200)
-                     +- *(8) Project [l_orderkey#4, l_extendedprice#9, l_discount#10]
-                        +- *(8) Filter ((isnotnull(l_returnflag#12) && (l_returnflag#12 = R)) && isnotnull(l_orderkey#4))
-                           +- *(8) FileScan orc [l_orderkey#4,l_extendedprice#9,l_discount#10,l_returnflag#12] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_returnflag), EqualTo(l_returnflag,R), IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_extendedprice:double,l_discount:double,l_returnflag:string>
+               :              +- *(5) Project [n_nationkey#48, n_name#49]
+               :                 +- *(5) Filter isnotnull(n_nationkey#48)
+               :                    +- *(5) FileScan avro [n_nationkey#48,n_name#49] Batched: false, Format: com.databricks.spark.avro.DefaultSource@555a0083, Location: InMemoryFileIndex[hdfs://namenode:8020/nation.avro], PartitionFilters: [], PushedFilters: [IsNotNull(n_nationkey)], ReadSchema: struct<n_nationkey:int,n_name:string>
+               +- *(9) Sort [l_orderkey#56 ASC NULLS FIRST], false, 0
+                  +- Exchange hashpartitioning(l_orderkey#56, 200)
+                     +- *(8) Project [l_orderkey#56, l_extendedprice#61, l_discount#62]
+                        +- *(8) Filter ((isnotnull(l_returnflag#64) && (l_returnflag#64 = R)) && isnotnull(l_orderkey#56))
+                           +- *(8) FileScan avro [l_orderkey#56,l_extendedprice#61,l_discount#62,l_returnflag#64] Batched: false, Format: com.databricks.spark.avro.DefaultSource@7bfb5a4, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.avro], PartitionFilters: [], PushedFilters: [IsNotNull(l_returnflag), EqualTo(l_returnflag,R), IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_extendedprice:double,l_discount:double,l_returnflag:string>

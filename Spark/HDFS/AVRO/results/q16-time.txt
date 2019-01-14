@@ -2,27 +2,28 @@
 +--------+--------------------+------+--------------+
 | p_brand|              p_type|p_size|supplier_count|
 +--------+--------------------+------+--------------+
-|Brand#34|ECONOMY BURNISHED...|    23|           592|
 |Brand#14|ECONOMY BRUSHED C...|    19|           580|
-|Brand#22|ECONOMY ANODIZED ...|     4|           576|
-|Brand#55|LARGE BURNISHED S...|    10|           576|
-|Brand#13|    LARGE PLATED TIN|    16|           575|
-|Brand#33|  LARGE PLATED BRASS|    16|           575|
-|Brand#22|  PROMO POLISHED TIN|    23|           572|
-|Brand#25|STANDARD PLATED N...|    19|           571|
-|Brand#13|ECONOMY BURNISHED...|    38|           568|
-|Brand#14|LARGE POLISHED STEEL|    38|           568|
-|Brand#34| PROMO PLATED NICKEL|     4|           568|
-|Brand#14| LARGE BRUSHED BRASS|    11|           567|
-|Brand#53|ECONOMY PLATED NI...|    23|           566|
+|Brand#25|STANDARD PLATED N...|    19|           572|
 |Brand#15|STANDARD PLATED B...|    19|           564|
-|Brand#31|STANDARD BURNISHE...|    23|           564|
-|Brand#32|   MEDIUM PLATED TIN|     4|           564|
-|Brand#52| LARGE BRUSHED STEEL|     4|           563|
-|Brand#34|PROMO ANODIZED STEEL|    16|           562|
-|Brand#14|LARGE ANODIZED BRASS|    23|           560|
-|Brand#15|SMALL POLISHED BRASS|    11|           560|
+|Brand#12|ECONOMY ANODIZED ...|    19|           556|
+|Brand#13| PROMO PLATED COPPER|    19|           556|
+|Brand#32|PROMO BRUSHED NICKEL|    19|           548|
+|Brand#11|LARGE POLISHED BRASS|    19|           544|
+|Brand#22|SMALL POLISHED BRASS|    19|           543|
+|Brand#41|PROMO ANODIZED BRASS|    19|           543|
+|Brand#11|ECONOMY BURNISHED...|    19|           540|
+|Brand#15|STANDARD ANODIZED...|    19|           540|
+|Brand#32|SMALL BRUSHED NICKEL|    19|           540|
+|Brand#54|STANDARD BRUSHED ...|    19|           540|
+|Brand#52|ECONOMY POLISHED ...|    19|           539|
+|Brand#13|  LARGE POLISHED TIN|    19|           536|
+|Brand#35|MEDIUM BRUSHED NI...|    19|           536|
+|Brand#54|SMALL ANODIZED BRASS|    19|           536|
+|Brand#13|ECONOMY BURNISHED...|    19|           535|
+|Brand#11|STANDARD BURNISHE...|    19|           532|
+|Brand#11| STANDARD PLATED TIN|    19|           532|
 +--------+--------------------+------+--------------+
 only showing top 20 rows
 
-Time taken: 116677 ms
+
+0.1272359999999999

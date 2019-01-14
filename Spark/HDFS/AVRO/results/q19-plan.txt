@@ -1,46 +1,21 @@
-== Parsed Logical Plan ==
-'Aggregate [sum('volume) AS sum(volume)#985]
-+- Project [if ((isnull(l_extendedprice#280) || isnull(l_discount#281))) null else UDF(l_extendedprice#280, l_discount#281) AS volume#981]
-   +- Filter ((((((((p_brand#41 = Brand#12) && UDF(p_container#44)) && (l_quantity#279 >= cast(1 as double))) && (l_quantity#279 <= cast(11 as double))) && (p_size#43 >= 1)) && (p_size#43 <= 5)) || ((((((p_brand#41 = Brand#23) && UDF(p_container#44)) && (l_quantity#279 >= cast(24 as double))) && (l_quantity#279 <= cast(34 as double))) && (p_size#43 >= 1)) && (p_size#43 <= 15))) || ((((((p_brand#41 = Brand#34) && UDF(p_container#44)) && (l_quantity#279 >= cast(20 as double))) && (l_quantity#279 <= cast(30 as double))) && (p_size#43 >= 1)) && (p_size#43 <= 15)))
-      +- Filter (((l_shipmode#289 = AIR) || (l_shipmode#289 = AIR REG)) && (l_shipinstruct#288 = DELIVER IN PERSON))
-         +- Join Inner, (l_partkey#276 = p_partkey#38)
-            :- Relation[p_partkey#38,p_name#39,p_mfgr#40,p_brand#41,p_type#42,p_size#43,p_container#44,p_retailprice#45,p_comment#46,p_dummy#47] orc
-            +- Relation[l_orderkey#275,l_partkey#276,l_suppkey#277,l_linenumber#278,l_quantity#279,l_extendedprice#280,l_discount#281,l_tax#282,l_returnflag#283,l_linestatus#284,l_shipdate#285,l_commitdate#286,l_receiptdate#287,l_shipinstruct#288,l_shipmode#289,l_comment#290,l_dummy#291] orc
-
-== Analyzed Logical Plan ==
-sum(volume): double
-Aggregate [sum(volume#981) AS sum(volume)#985]
-+- Project [if ((isnull(l_extendedprice#280) || isnull(l_discount#281))) null else if ((isnull(l_extendedprice#280) || isnull(l_discount#281))) null else UDF(l_extendedprice#280, l_discount#281) AS volume#981]
-   +- Filter ((((((((p_brand#41 = Brand#12) && UDF(p_container#44)) && (l_quantity#279 >= cast(1 as double))) && (l_quantity#279 <= cast(11 as double))) && (p_size#43 >= 1)) && (p_size#43 <= 5)) || ((((((p_brand#41 = Brand#23) && UDF(p_container#44)) && (l_quantity#279 >= cast(24 as double))) && (l_quantity#279 <= cast(34 as double))) && (p_size#43 >= 1)) && (p_size#43 <= 15))) || ((((((p_brand#41 = Brand#34) && UDF(p_container#44)) && (l_quantity#279 >= cast(20 as double))) && (l_quantity#279 <= cast(30 as double))) && (p_size#43 >= 1)) && (p_size#43 <= 15)))
-      +- Filter (((l_shipmode#289 = AIR) || (l_shipmode#289 = AIR REG)) && (l_shipinstruct#288 = DELIVER IN PERSON))
-         +- Join Inner, (l_partkey#276 = p_partkey#38)
-            :- Relation[p_partkey#38,p_name#39,p_mfgr#40,p_brand#41,p_type#42,p_size#43,p_container#44,p_retailprice#45,p_comment#46,p_dummy#47] orc
-            +- Relation[l_orderkey#275,l_partkey#276,l_suppkey#277,l_linenumber#278,l_quantity#279,l_extendedprice#280,l_discount#281,l_tax#282,l_returnflag#283,l_linestatus#284,l_shipdate#285,l_commitdate#286,l_receiptdate#287,l_shipinstruct#288,l_shipmode#289,l_comment#290,l_dummy#291] orc
-
-== Optimized Logical Plan ==
-Aggregate [sum(volume#981) AS sum(volume)#985]
-+- Project [if ((isnull(l_extendedprice#280) || isnull(l_discount#281))) null else if ((isnull(l_extendedprice#280) || isnull(l_discount#281))) null else UDF(l_extendedprice#280, l_discount#281) AS volume#981]
-   +- Join Inner, ((((((((p_brand#41 = Brand#12) && UDF(p_container#44)) && (l_quantity#279 >= 1.0)) && (l_quantity#279 <= 11.0)) && (p_size#43 <= 5)) || (((((p_brand#41 = Brand#23) && UDF(p_container#44)) && (l_quantity#279 >= 24.0)) && (l_quantity#279 <= 34.0)) && (p_size#43 <= 15))) || (((((p_brand#41 = Brand#34) && UDF(p_container#44)) && (l_quantity#279 >= 20.0)) && (l_quantity#279 <= 30.0)) && (p_size#43 <= 15))) && (l_partkey#276 = p_partkey#38))
-      :- Project [p_partkey#38, p_brand#41, p_size#43, p_container#44]
-      :  +- Filter ((isnotnull(p_size#43) && (p_size#43 >= 1)) && isnotnull(p_partkey#38))
-      :     +- Relation[p_partkey#38,p_name#39,p_mfgr#40,p_brand#41,p_type#42,p_size#43,p_container#44,p_retailprice#45,p_comment#46,p_dummy#47] orc
-      +- Project [l_partkey#276, l_quantity#279, l_extendedprice#280, l_discount#281]
-         +- Filter (((isnotnull(l_shipinstruct#288) && ((l_shipmode#289 = AIR) || (l_shipmode#289 = AIR REG))) && (l_shipinstruct#288 = DELIVER IN PERSON)) && isnotnull(l_partkey#276))
-            +- Relation[l_orderkey#275,l_partkey#276,l_suppkey#277,l_linenumber#278,l_quantity#279,l_extendedprice#280,l_discount#281,l_tax#282,l_returnflag#283,l_linestatus#284,l_shipdate#285,l_commitdate#286,l_receiptdate#287,l_shipinstruct#288,l_shipmode#289,l_comment#290,l_dummy#291] orc
-
 == Physical Plan ==
-*(6) HashAggregate(keys=[], functions=[sum(volume#981)], output=[sum(volume)#985])
+*(8) HashAggregate(keys=[], functions=[sum(cast(volume#111225 as bigint))])
 +- Exchange SinglePartition
-   +- *(5) HashAggregate(keys=[], functions=[partial_sum(volume#981)], output=[sum#1001])
-      +- *(5) Project [if ((isnull(l_extendedprice#280) || isnull(l_discount#281))) null else if ((isnull(l_extendedprice#280) || isnull(l_discount#281))) null else UDF(l_extendedprice#280, l_discount#281) AS volume#981]
-         +- *(5) SortMergeJoin [p_partkey#38], [l_partkey#276], Inner, (((((((p_brand#41 = Brand#12) && UDF(p_container#44)) && (l_quantity#279 >= 1.0)) && (l_quantity#279 <= 11.0)) && (p_size#43 <= 5)) || (((((p_brand#41 = Brand#23) && UDF(p_container#44)) && (l_quantity#279 >= 24.0)) && (l_quantity#279 <= 34.0)) && (p_size#43 <= 15))) || (((((p_brand#41 = Brand#34) && UDF(p_container#44)) && (l_quantity#279 >= 20.0)) && (l_quantity#279 <= 30.0)) && (p_size#43 <= 15)))
-            :- *(2) Sort [p_partkey#38 ASC NULLS FIRST], false, 0
-            :  +- Exchange hashpartitioning(p_partkey#38, 200)
-            :     +- *(1) Project [p_partkey#38, p_brand#41, p_size#43, p_container#44]
-            :        +- *(1) Filter ((isnotnull(p_size#43) && (p_size#43 >= 1)) && isnotnull(p_partkey#38))
-            :           +- *(1) FileScan orc [p_partkey#38,p_brand#41,p_size#43,p_container#44] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/part.orc], PartitionFilters: [], PushedFilters: [IsNotNull(p_size), GreaterThanOrEqual(p_size,1), IsNotNull(p_partkey)], ReadSchema: struct<p_partkey:int,p_brand:string,p_size:int,p_container:string>
-            +- *(4) Sort [l_partkey#276 ASC NULLS FIRST], false, 0
-               +- Exchange hashpartitioning(l_partkey#276, 200)
-                  +- *(3) Project [l_partkey#276, l_quantity#279, l_extendedprice#280, l_discount#281]
-                     +- *(3) Filter (((isnotnull(l_shipinstruct#288) && ((l_shipmode#289 = AIR) || (l_shipmode#289 = AIR REG))) && (l_shipinstruct#288 = DELIVER IN PERSON)) && isnotnull(l_partkey#276))
-                        +- *(3) FileScan orc [l_partkey#276,l_quantity#279,l_extendedprice#280,l_discount#281,l_shipinstruct#288,l_shipmode#289] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_shipinstruct), Or(EqualTo(l_shipmode,AIR),EqualTo(l_shipmode,AIR REG)), EqualTo(l_sh..., ReadSchema: struct<l_partkey:int,l_quantity:double,l_extendedprice:double,l_discount:double,l_shipinstruct:st...
+   +- *(7) HashAggregate(keys=[], functions=[partial_sum(cast(volume#111225 as bigint))])
+      +- *(7) Project [pythonUDF0#125783 AS volume#111225]
+         +- BatchEvalPython [<lambda>(l_extendedprice#61, l_discount#62)], [l_discount#62, l_extendedprice#61, pythonUDF0#125783]
+            +- *(6) Project [l_discount#62, l_extendedprice#61]
+               +- *(6) Project [p_partkey#0, p_brand#3, p_size#5, p_container#6, l_partkey#57, l_quantity#60, l_extendedprice#61, l_discount#62]
+                  +- *(6) Filter (((((((p_brand#3 = Brand#12) && pythonUDF0#125780) && (l_quantity#60 >= 1.0)) && (l_quantity#60 <= 11.0)) && (p_size#5 <= 5)) || (((((p_brand#3 = Brand#23) && pythonUDF1#125781) && (l_quantity#60 >= 24.0)) && (l_quantity#60 <= 34.0)) && (p_size#5 <= 15))) || (((((p_brand#3 = Brand#34) && pythonUDF2#125782) && (l_quantity#60 >= 20.0)) && (l_quantity#60 <= 30.0)) && (p_size#5 <= 15)))
+                     +- BatchEvalPython [<lambda>(p_container#6), <lambda>(p_container#6), <lambda>(p_container#6)], [p_partkey#0, p_brand#3, p_size#5, p_container#6, l_partkey#57, l_quantity#60, l_extendedprice#61, l_discount#62, pythonUDF0#125780, pythonUDF1#125781, pythonUDF2#125782]
+                        +- *(5) SortMergeJoin [p_partkey#0], [l_partkey#57], Inner
+                           :- *(2) Sort [p_partkey#0 ASC NULLS FIRST], false, 0
+                           :  +- Exchange hashpartitioning(p_partkey#0, 200)
+                           :     +- *(1) Project [p_partkey#0, p_brand#3, p_size#5, p_container#6]
+                           :        +- *(1) Filter ((isnotnull(p_size#5) && (p_size#5 >= 1)) && isnotnull(p_partkey#0))
+                           :           +- *(1) FileScan avro [p_partkey#0,p_brand#3,p_size#5,p_container#6] Batched: false, Format: com.databricks.spark.avro.DefaultSource@754c2a03, Location: InMemoryFileIndex[hdfs://namenode:8020/part.avro], PartitionFilters: [], PushedFilters: [IsNotNull(p_size), GreaterThanOrEqual(p_size,1), IsNotNull(p_partkey)], ReadSchema: struct<p_partkey:int,p_brand:string,p_size:int,p_container:string>
+                           +- *(4) Sort [l_partkey#57 ASC NULLS FIRST], false, 0
+                              +- Exchange hashpartitioning(l_partkey#57, 200)
+                                 +- *(3) Project [l_partkey#57, l_quantity#60, l_extendedprice#61, l_discount#62]
+                                    +- *(3) Filter (((isnotnull(l_shipinstruct#69) && ((l_shipmode#70 = AIR) || (l_shipmode#70 = AIR REG))) && (l_shipinstruct#69 = DELIVER IN PERSON)) && isnotnull(l_partkey#57))
+                                       +- *(3) FileScan avro [l_partkey#57,l_quantity#60,l_extendedprice#61,l_discount#62,l_shipinstruct#69,l_shipmode#70] Batched: false, Format: com.databricks.spark.avro.DefaultSource@7bfb5a4, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.avro], PartitionFilters: [], PushedFilters: [IsNotNull(l_shipinstruct), Or(EqualTo(l_shipmode,AIR),EqualTo(l_shipmode,AIR REG)), EqualTo(l_sh..., ReadSchema: struct<l_partkey:int,l_quantity:double,l_extendedprice:double,l_discount:double,l_shipinstruct:st...

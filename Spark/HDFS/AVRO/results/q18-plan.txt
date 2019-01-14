@@ -1,100 +1,38 @@
-== Parsed Logical Plan ==
-GlobalLimit 100
-+- LocalLimit 100
-   +- AnalysisBarrier
-         +- Sort [o_totalprice#258 DESC NULLS LAST, o_orderdates#259 ASC NULLS FIRST], true
-            +- Aggregate [c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258], [c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258, sum(l_quantity#279) AS sum(l_quantity)#858]
-               +- Project [l_quantity#279, c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258]
-                  +- Join Inner, (c_custkey#237 = o_custkey#256)
-                     :- Join Inner, (o_orderkey#255 = l_orderkey#275)
-                     :  :- Join Inner, (o_orderkey#255 = key#602)
-                     :  :  :- Project [l_orderkey#275 AS key#602, sum_quantity#595]
-                     :  :  :  +- Filter (sum_quantity#595 > cast(313 as double))
-                     :  :  :     +- Aggregate [l_orderkey#275], [l_orderkey#275, sum(l_quantity#279) AS sum_quantity#595]
-                     :  :  :        +- Relation[l_orderkey#275,l_partkey#276,l_suppkey#277,l_linenumber#278,l_quantity#279,l_extendedprice#280,l_discount#281,l_tax#282,l_returnflag#283,l_linestatus#284,l_shipdate#285,l_commitdate#286,l_receiptdate#287,l_shipinstruct#288,l_shipmode#289,l_comment#290,l_dummy#291] orc
-                     :  :  +- Relation[o_orderkey#255,o_custkey#256,o_orderstatus#257,o_totalprice#258,o_orderdates#259,o_orderpriority#260,o_clerk#261,o_shippriority#262,o_comment#263,o_dummy#264] orc
-                     :  +- Relation[l_orderkey#275,l_partkey#276,l_suppkey#277,l_linenumber#278,l_quantity#279,l_extendedprice#280,l_discount#281,l_tax#282,l_returnflag#283,l_linestatus#284,l_shipdate#285,l_commitdate#286,l_receiptdate#287,l_shipinstruct#288,l_shipmode#289,l_comment#290,l_dummy#291] orc
-                     +- Relation[c_custkey#237,c_name#238,c_address#239,c_nationkey#240,c_phone#241,c_acctbal#242,c_mktsegment#243,c_comment#244,c_dummy#245] orc
-
-== Analyzed Logical Plan ==
-c_name: string, c_custkey: int, o_orderkey: int, o_orderdates: string, o_totalprice: double, sum(l_quantity): double
-GlobalLimit 100
-+- LocalLimit 100
-   +- Sort [o_totalprice#258 DESC NULLS LAST, o_orderdates#259 ASC NULLS FIRST], true
-      +- Aggregate [c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258], [c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258, sum(l_quantity#279) AS sum(l_quantity)#858]
-         +- Project [l_quantity#279, c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258]
-            +- Join Inner, (c_custkey#237 = o_custkey#256)
-               :- Join Inner, (o_orderkey#255 = l_orderkey#275)
-               :  :- Join Inner, (o_orderkey#255 = key#602)
-               :  :  :- Project [l_orderkey#275 AS key#602, sum_quantity#595]
-               :  :  :  +- Filter (sum_quantity#595 > cast(313 as double))
-               :  :  :     +- Aggregate [l_orderkey#275], [l_orderkey#275, sum(l_quantity#279) AS sum_quantity#595]
-               :  :  :        +- Relation[l_orderkey#275,l_partkey#276,l_suppkey#277,l_linenumber#278,l_quantity#279,l_extendedprice#280,l_discount#281,l_tax#282,l_returnflag#283,l_linestatus#284,l_shipdate#285,l_commitdate#286,l_receiptdate#287,l_shipinstruct#288,l_shipmode#289,l_comment#290,l_dummy#291] orc
-               :  :  +- Relation[o_orderkey#255,o_custkey#256,o_orderstatus#257,o_totalprice#258,o_orderdates#259,o_orderpriority#260,o_clerk#261,o_shippriority#262,o_comment#263,o_dummy#264] orc
-               :  +- Relation[l_orderkey#275,l_partkey#276,l_suppkey#277,l_linenumber#278,l_quantity#279,l_extendedprice#280,l_discount#281,l_tax#282,l_returnflag#283,l_linestatus#284,l_shipdate#285,l_commitdate#286,l_receiptdate#287,l_shipinstruct#288,l_shipmode#289,l_comment#290,l_dummy#291] orc
-               +- Relation[c_custkey#237,c_name#238,c_address#239,c_nationkey#240,c_phone#241,c_acctbal#242,c_mktsegment#243,c_comment#244,c_dummy#245] orc
-
-== Optimized Logical Plan ==
-GlobalLimit 100
-+- LocalLimit 100
-   +- Sort [o_totalprice#258 DESC NULLS LAST, o_orderdates#259 ASC NULLS FIRST], true
-      +- Aggregate [c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258], [c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258, sum(l_quantity#279) AS sum(l_quantity)#858]
-         +- Project [l_quantity#279, c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258]
-            +- Join Inner, (c_custkey#237 = o_custkey#256)
-               :- Project [o_orderkey#255, o_custkey#256, o_totalprice#258, o_orderdates#259, l_quantity#279]
-               :  +- Join Inner, (o_orderkey#255 = l_orderkey#275)
-               :     :- Project [o_orderkey#255, o_custkey#256, o_totalprice#258, o_orderdates#259]
-               :     :  +- Join Inner, (o_orderkey#255 = key#602)
-               :     :     :- Project [l_orderkey#275 AS key#602]
-               :     :     :  +- Filter (isnotnull(sum_quantity#595) && (sum_quantity#595 > 313.0))
-               :     :     :     +- Aggregate [l_orderkey#275], [l_orderkey#275, sum(l_quantity#279) AS sum_quantity#595]
-               :     :     :        +- Project [l_orderkey#275, l_quantity#279]
-               :     :     :           +- Filter isnotnull(l_orderkey#275)
-               :     :     :              +- Relation[l_orderkey#275,l_partkey#276,l_suppkey#277,l_linenumber#278,l_quantity#279,l_extendedprice#280,l_discount#281,l_tax#282,l_returnflag#283,l_linestatus#284,l_shipdate#285,l_commitdate#286,l_receiptdate#287,l_shipinstruct#288,l_shipmode#289,l_comment#290,l_dummy#291] orc
-               :     :     +- Project [o_orderkey#255, o_custkey#256, o_totalprice#258, o_orderdates#259]
-               :     :        +- Filter (isnotnull(o_orderkey#255) && isnotnull(o_custkey#256))
-               :     :           +- Relation[o_orderkey#255,o_custkey#256,o_orderstatus#257,o_totalprice#258,o_orderdates#259,o_orderpriority#260,o_clerk#261,o_shippriority#262,o_comment#263,o_dummy#264] orc
-               :     +- Project [l_orderkey#275, l_quantity#279]
-               :        +- Filter isnotnull(l_orderkey#275)
-               :           +- Relation[l_orderkey#275,l_partkey#276,l_suppkey#277,l_linenumber#278,l_quantity#279,l_extendedprice#280,l_discount#281,l_tax#282,l_returnflag#283,l_linestatus#284,l_shipdate#285,l_commitdate#286,l_receiptdate#287,l_shipinstruct#288,l_shipmode#289,l_comment#290,l_dummy#291] orc
-               +- Project [c_custkey#237, c_name#238]
-                  +- Filter isnotnull(c_custkey#237)
-                     +- Relation[c_custkey#237,c_name#238,c_address#239,c_nationkey#240,c_phone#241,c_acctbal#242,c_mktsegment#243,c_comment#244,c_dummy#245] orc
 
 == Physical Plan ==
-TakeOrderedAndProject(limit=100, orderBy=[o_totalprice#258 DESC NULLS LAST,o_orderdates#259 ASC NULLS FIRST], output=[c_name#238,c_custkey#237,o_orderkey#255,o_orderdates#259,o_totalprice#258,sum(l_quantity)#858])
-+- *(13) HashAggregate(keys=[c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258], functions=[sum(l_quantity#279)], output=[c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258, sum(l_quantity)#858])
-   +- *(13) HashAggregate(keys=[c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258], functions=[partial_sum(l_quantity#279)], output=[c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258, sum#893])
-      +- *(13) Project [l_quantity#279, c_name#238, c_custkey#237, o_orderkey#255, o_orderdates#259, o_totalprice#258]
-         +- *(13) SortMergeJoin [o_custkey#256], [c_custkey#237], Inner
-            :- *(10) Sort [o_custkey#256 ASC NULLS FIRST], false, 0
-            :  +- Exchange hashpartitioning(o_custkey#256, 200)
-            :     +- *(9) Project [o_orderkey#255, o_custkey#256, o_totalprice#258, o_orderdates#259, l_quantity#279]
-            :        +- *(9) SortMergeJoin [o_orderkey#255], [l_orderkey#275], Inner
-            :           :- *(6) Project [o_orderkey#255, o_custkey#256, o_totalprice#258, o_orderdates#259]
-            :           :  +- *(6) SortMergeJoin [key#602], [o_orderkey#255], Inner
-            :           :     :- *(3) Sort [key#602 ASC NULLS FIRST], false, 0
-            :           :     :  +- Exchange hashpartitioning(key#602, 200)
-            :           :     :     +- *(2) Project [l_orderkey#275 AS key#602]
-            :           :     :        +- *(2) Filter (isnotnull(sum_quantity#595) && (sum_quantity#595 > 313.0))
-            :           :     :           +- *(2) HashAggregate(keys=[l_orderkey#275], functions=[sum(l_quantity#279)], output=[l_orderkey#275, sum_quantity#595])
-            :           :     :              +- Exchange hashpartitioning(l_orderkey#275, 200)
-            :           :     :                 +- *(1) HashAggregate(keys=[l_orderkey#275], functions=[partial_sum(l_quantity#279)], output=[l_orderkey#275, sum#895])
-            :           :     :                    +- *(1) Project [l_orderkey#275, l_quantity#279]
-            :           :     :                       +- *(1) Filter isnotnull(l_orderkey#275)
-            :           :     :                          +- *(1) FileScan orc [l_orderkey#275,l_quantity#279] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_quantity:double>
-            :           :     +- *(5) Sort [o_orderkey#255 ASC NULLS FIRST], false, 0
-            :           :        +- Exchange hashpartitioning(o_orderkey#255, 200)
-            :           :           +- *(4) Project [o_orderkey#255, o_custkey#256, o_totalprice#258, o_orderdates#259]
-            :           :              +- *(4) Filter (isnotnull(o_orderkey#255) && isnotnull(o_custkey#256))
-            :           :                 +- *(4) FileScan orc [o_orderkey#255,o_custkey#256,o_totalprice#258,o_orderdates#259] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.orc], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderkey), IsNotNull(o_custkey)], ReadSchema: struct<o_orderkey:int,o_custkey:int,o_totalprice:double,o_orderdates:string>
-            :           +- *(8) Sort [l_orderkey#275 ASC NULLS FIRST], false, 0
-            :              +- Exchange hashpartitioning(l_orderkey#275, 200)
-            :                 +- *(7) Project [l_orderkey#275, l_quantity#279]
-            :                    +- *(7) Filter isnotnull(l_orderkey#275)
-            :                       +- *(7) FileScan orc [l_orderkey#275,l_quantity#279] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_quantity:double>
-            +- *(12) Sort [c_custkey#237 ASC NULLS FIRST], false, 0
-               +- Exchange hashpartitioning(c_custkey#237, 200)
-                  +- *(11) Project [c_custkey#237, c_name#238]
-                     +- *(11) Filter isnotnull(c_custkey#237)
-                        +- *(11) FileScan orc [c_custkey#237,c_name#238] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.orc], PartitionFilters: [], PushedFilters: [IsNotNull(c_custkey)], ReadSchema: struct<c_custkey:int,c_name:string>
+TakeOrderedAndProject(limit=100, orderBy=[o_totalprice#93 DESC NULLS LAST,o_orderdates#94 ASC NULLS FIRST], output=[c_name#111,c_custkey#110,o_orderkey#90,o_orderdates#94,o_totalprice#93,sum(l_quantity)#99333])
++- *(13) HashAggregate(keys=[c_name#111, c_custkey#110, o_orderkey#90, o_orderdates#94, o_totalprice#93], functions=[sum(l_quantity#60)])
+   +- *(13) HashAggregate(keys=[c_name#111, c_custkey#110, o_orderkey#90, o_orderdates#94, o_totalprice#93], functions=[partial_sum(l_quantity#60)])
+      +- *(13) Project [l_quantity#60, c_name#111, c_custkey#110, o_orderkey#90, o_orderdates#94, o_totalprice#93]
+         +- *(13) SortMergeJoin [o_custkey#91], [c_custkey#110], Inner
+            :- *(10) Sort [o_custkey#91 ASC NULLS FIRST], false, 0
+            :  +- Exchange hashpartitioning(o_custkey#91, 200)
+            :     +- *(9) Project [o_orderkey#90, o_custkey#91, o_totalprice#93, o_orderdates#94, l_quantity#60]
+            :        +- *(9) SortMergeJoin [o_orderkey#90], [l_orderkey#56], Inner
+            :           :- *(6) Project [o_orderkey#90, o_custkey#91, o_totalprice#93, o_orderdates#94]
+            :           :  +- *(6) SortMergeJoin [key#99077], [o_orderkey#90], Inner
+            :           :     :- *(3) Sort [key#99077 ASC NULLS FIRST], false, 0
+            :           :     :  +- Exchange hashpartitioning(key#99077, 200)
+            :           :     :     +- *(2) Project [l_orderkey#56 AS key#99077]
+            :           :     :        +- *(2) Filter (isnotnull(sum_quantity#99070) && (sum_quantity#99070 > 313.0))
+            :           :     :           +- *(2) HashAggregate(keys=[l_orderkey#56], functions=[sum(l_quantity#60)])
+            :           :     :              +- Exchange hashpartitioning(l_orderkey#56, 200)
+            :           :     :                 +- *(1) HashAggregate(keys=[l_orderkey#56], functions=[partial_sum(l_quantity#60)])
+            :           :     :                    +- *(1) Project [l_orderkey#56, l_quantity#60]
+            :           :     :                       +- *(1) Filter isnotnull(l_orderkey#56)
+            :           :     :                          +- *(1) FileScan avro [l_orderkey#56,l_quantity#60] Batched: false, Format: com.databricks.spark.avro.DefaultSource@7bfb5a4, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.avro], PartitionFilters: [], PushedFilters: [IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_quantity:double>
+            :           :     +- *(5) Sort [o_orderkey#90 ASC NULLS FIRST], false, 0
+            :           :        +- Exchange hashpartitioning(o_orderkey#90, 200)
+            :           :           +- *(4) Project [o_orderkey#90, o_custkey#91, o_totalprice#93, o_orderdates#94]
+            :           :              +- *(4) Filter (isnotnull(o_orderkey#90) && isnotnull(o_custkey#91))
+            :           :                 +- *(4) FileScan avro [o_orderkey#90,o_custkey#91,o_totalprice#93,o_orderdates#94] Batched: false, Format: com.databricks.spark.avro.DefaultSource@6fb4750c, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.avro], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderkey), IsNotNull(o_custkey)], ReadSchema: struct<o_orderkey:int,o_custkey:int,o_totalprice:double,o_orderdates:string>
+            :           +- *(8) Sort [l_orderkey#56 ASC NULLS FIRST], false, 0
+            :              +- Exchange hashpartitioning(l_orderkey#56, 200)
+            :                 +- *(7) Project [l_orderkey#56, l_quantity#60]
+            :                    +- *(7) Filter isnotnull(l_orderkey#56)
+            :                       +- *(7) FileScan avro [l_orderkey#56,l_quantity#60] Batched: false, Format: com.databricks.spark.avro.DefaultSource@7bfb5a4, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.avro], PartitionFilters: [], PushedFilters: [IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_quantity:double>
+            +- *(12) Sort [c_custkey#110 ASC NULLS FIRST], false, 0
+               +- Exchange hashpartitioning(c_custkey#110, 200)
+                  +- *(11) Project [c_custkey#110, c_name#111]
+                     +- *(11) Filter isnotnull(c_custkey#110)
+                        +- *(11) FileScan avro [c_custkey#110,c_name#111] Batched: false, Format: com.databricks.spark.avro.DefaultSource@4c50e846, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.avro], PartitionFilters: [], PushedFilters: [IsNotNull(c_custkey)], ReadSchema: struct<c_custkey:int,c_name:string>

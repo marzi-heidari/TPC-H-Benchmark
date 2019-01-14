@@ -1,49 +1,49 @@
 
 == Physical Plan ==
-*(17) Sort [revenue#1282 DESC NULLS LAST], true, 0
-+- Exchange rangepartitioning(revenue#1282 DESC NULLS LAST, 200)
-   +- *(16) HashAggregate(keys=[n_name#59], functions=[sum(ue#1276)])
-      +- Exchange hashpartitioning(n_name#59, 200)
-         +- *(15) HashAggregate(keys=[n_name#59], functions=[partial_sum(ue#1276)])
-            +- *(15) Project [n_name#59, (l_extendedprice#731 * (1.0 - l_discount#732)) AS ue#1276]
-               +- *(15) SortMergeJoin [o_custkey#571, s_nationkey#45], [c_custkey#973, c_nationkey#976], Inner
-                  :- *(12) Sort [o_custkey#571 ASC NULLS FIRST, s_nationkey#45 ASC NULLS FIRST], false, 0
-                  :  +- Exchange hashpartitioning(o_custkey#571, s_nationkey#45, 200)
-                  :     +- *(11) Project [n_name#59, l_extendedprice#731, l_discount#732, s_nationkey#45, o_custkey#571]
-                  :        +- *(11) SortMergeJoin [l_orderkey#726], [o_orderkey#570], Inner
-                  :           :- *(8) Sort [l_orderkey#726 ASC NULLS FIRST], false, 0
-                  :           :  +- Exchange hashpartitioning(l_orderkey#726, 200)
-                  :           :     +- *(7) Project [n_name#59, l_extendedprice#731, l_discount#732, l_orderkey#726, s_nationkey#45]
-                  :           :        +- *(7) SortMergeJoin [s_suppkey#42], [l_suppkey#728], Inner
-                  :           :           :- *(4) Sort [s_suppkey#42 ASC NULLS FIRST], false, 0
-                  :           :           :  +- Exchange hashpartitioning(s_suppkey#42, 200)
-                  :           :           :     +- *(3) Project [n_name#59, s_suppkey#42, s_nationkey#45]
-                  :           :           :        +- *(3) BroadcastHashJoin [n_nationkey#58], [s_nationkey#45], Inner, BuildLeft
+*(17) Sort [revenue#47646 DESC NULLS LAST], true, 0
++- Exchange rangepartitioning(revenue#47646 DESC NULLS LAST, 200)
+   +- *(16) HashAggregate(keys=[n_name#3729], functions=[sum(ue#47640)])
+      +- Exchange hashpartitioning(n_name#3729, 200)
+         +- *(15) HashAggregate(keys=[n_name#3729], functions=[partial_sum(ue#47640)])
+            +- *(15) Project [n_name#3729, (l_extendedprice#9905 * (1.0 - l_discount#9906)) AS ue#47640]
+               +- *(15) SortMergeJoin [o_custkey#9744, s_nationkey#3785], [c_custkey#9766, c_nationkey#9769], Inner
+                  :- *(12) Sort [o_custkey#9744 ASC NULLS FIRST, s_nationkey#3785 ASC NULLS FIRST], false, 0
+                  :  +- Exchange hashpartitioning(o_custkey#9744, s_nationkey#3785, 200)
+                  :     +- *(11) Project [n_name#3729, l_extendedprice#9905, l_discount#9906, s_nationkey#3785, o_custkey#9744]
+                  :        +- *(11) SortMergeJoin [l_orderkey#9900], [o_orderkey#9743], Inner
+                  :           :- *(8) Sort [l_orderkey#9900 ASC NULLS FIRST], false, 0
+                  :           :  +- Exchange hashpartitioning(l_orderkey#9900, 200)
+                  :           :     +- *(7) Project [n_name#3729, l_extendedprice#9905, l_discount#9906, l_orderkey#9900, s_nationkey#3785]
+                  :           :        +- *(7) SortMergeJoin [s_suppkey#3782], [l_suppkey#9902], Inner
+                  :           :           :- *(4) Sort [s_suppkey#3782 ASC NULLS FIRST], false, 0
+                  :           :           :  +- Exchange hashpartitioning(s_suppkey#3782, 200)
+                  :           :           :     +- *(3) Project [n_name#3729, s_suppkey#3782, s_nationkey#3785]
+                  :           :           :        +- *(3) BroadcastHashJoin [n_nationkey#3728], [s_nationkey#3785], Inner, BuildLeft
                   :           :           :           :- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[0, int, true] as bigint)))
-                  :           :           :           :  +- *(2) Project [n_nationkey#58, n_name#59]
-                  :           :           :           :     +- *(2) BroadcastHashJoin [r_regionkey#4], [n_regionkey#60], Inner, BuildLeft
+                  :           :           :           :  +- *(2) Project [n_nationkey#3728, n_name#3729]
+                  :           :           :           :     +- *(2) BroadcastHashJoin [r_regionkey#3712], [n_regionkey#3730], Inner, BuildLeft
                   :           :           :           :        :- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[0, int, true] as bigint)))
-                  :           :           :           :        :  +- *(1) Project [r_regionkey#4]
-                  :           :           :           :        :     +- *(1) Filter ((isnotnull(r_name#5) && (r_name#5 = MIDDLE EAST)) && isnotnull(r_regionkey#4))
-                  :           :           :           :        :        +- *(1) FileScan orc [r_regionkey#4,r_name#5] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/region.orc], PartitionFilters: [], PushedFilters: [IsNotNull(r_name), EqualTo(r_name,MIDDLE EAST), IsNotNull(r_regionkey)], ReadSchema: struct<r_regionkey:int,r_name:string>
-                  :           :           :           :        +- *(2) Project [n_nationkey#58, n_name#59, n_regionkey#60]
-                  :           :           :           :           +- *(2) Filter (isnotnull(n_regionkey#60) && isnotnull(n_nationkey#58))
-                  :           :           :           :              +- *(2) FileScan orc [n_nationkey#58,n_name#59,n_regionkey#60] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/nation.orc], PartitionFilters: [], PushedFilters: [IsNotNull(n_regionkey), IsNotNull(n_nationkey)], ReadSchema: struct<n_nationkey:int,n_name:string,n_regionkey:int>
-                  :           :           :           +- *(3) Project [s_suppkey#42, s_nationkey#45]
-                  :           :           :              +- *(3) Filter (isnotnull(s_nationkey#45) && isnotnull(s_suppkey#42))
-                  :           :           :                 +- *(3) FileScan orc [s_suppkey#42,s_nationkey#45] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/supplier.orc], PartitionFilters: [], PushedFilters: [IsNotNull(s_nationkey), IsNotNull(s_suppkey)], ReadSchema: struct<s_suppkey:int,s_nationkey:int>
-                  :           :           +- *(6) Sort [l_suppkey#728 ASC NULLS FIRST], false, 0
-                  :           :              +- Exchange hashpartitioning(l_suppkey#728, 200)
-                  :           :                 +- *(5) Project [l_orderkey#726, l_suppkey#728, l_extendedprice#731, l_discount#732]
-                  :           :                    +- *(5) Filter (isnotnull(l_suppkey#728) && isnotnull(l_orderkey#726))
-                  :           :                       +- *(5) FileScan orc [l_orderkey#726,l_suppkey#728,l_extendedprice#731,l_discount#732] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_suppkey), IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_suppkey:int,l_extendedprice:double,l_discount:double>
-                  :           +- *(10) Sort [o_orderkey#570 ASC NULLS FIRST], false, 0
-                  :              +- Exchange hashpartitioning(o_orderkey#570, 200)
-                  :                 +- *(9) Project [o_orderkey#570, o_custkey#571]
-                  :                    +- *(9) Filter ((((isnotnull(o_orderdates#574) && (o_orderdates#574 < 1995-01-01)) && (o_orderdates#574 >= 1994-01-01)) && isnotnull(o_orderkey#570)) && isnotnull(o_custkey#571))
-                  :                       +- *(9) FileScan orc [o_orderkey#570,o_custkey#571,o_orderdates#574] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.orc], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderdates), LessThan(o_orderdates,1995-01-01), GreaterThanOrEqual(o_orderdates,1994..., ReadSchema: struct<o_orderkey:int,o_custkey:int,o_orderdates:string>
-                  +- *(14) Sort [c_custkey#973 ASC NULLS FIRST, c_nationkey#976 ASC NULLS FIRST], false, 0
-                     +- Exchange hashpartitioning(c_custkey#973, c_nationkey#976, 200)
-                        +- *(13) Project [c_custkey#973, c_nationkey#976]
-                           +- *(13) Filter (isnotnull(c_custkey#973) && isnotnull(c_nationkey#976))
-                              +- *(13) FileScan orc [c_custkey#973,c_nationkey#976] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.orc], PartitionFilters: [], PushedFilters: [IsNotNull(c_custkey), IsNotNull(c_nationkey)], ReadSchema: struct<c_custkey:int,c_nationkey:int>
+                  :           :           :           :        :  +- *(1) Project [r_regionkey#3712]
+                  :           :           :           :        :     +- *(1) Filter ((isnotnull(r_name#3713) && (r_name#3713 = MIDDLE EAST)) && isnotnull(r_regionkey#3712))
+                  :           :           :           :        :        +- *(1) FileScan avro [r_regionkey#3712,r_name#3713] Batched: false, Format: com.databricks.spark.avro.DefaultSource@3a5ed44a, Location: InMemoryFileIndex[hdfs://namenode:8020/region.avro], PartitionFilters: [], PushedFilters: [IsNotNull(r_name), EqualTo(r_name,MIDDLE EAST), IsNotNull(r_regionkey)], ReadSchema: struct<r_regionkey:int,r_name:string>
+                  :           :           :           :        +- *(2) Project [n_nationkey#3728, n_name#3729, n_regionkey#3730]
+                  :           :           :           :           +- *(2) Filter (isnotnull(n_regionkey#3730) && isnotnull(n_nationkey#3728))
+                  :           :           :           :              +- *(2) FileScan avro [n_nationkey#3728,n_name#3729,n_regionkey#3730] Batched: false, Format: com.databricks.spark.avro.DefaultSource@4222e8ff, Location: InMemoryFileIndex[hdfs://namenode:8020/nation.avro], PartitionFilters: [], PushedFilters: [IsNotNull(n_regionkey), IsNotNull(n_nationkey)], ReadSchema: struct<n_nationkey:int,n_name:string,n_regionkey:int>
+                  :           :           :           +- *(3) Project [s_suppkey#3782, s_nationkey#3785]
+                  :           :           :              +- *(3) Filter (isnotnull(s_nationkey#3785) && isnotnull(s_suppkey#3782))
+                  :           :           :                 +- *(3) FileScan avro [s_suppkey#3782,s_nationkey#3785] Batched: false, Format: com.databricks.spark.avro.DefaultSource@38c5c37a, Location: InMemoryFileIndex[hdfs://namenode:8020/supplier.avro], PartitionFilters: [], PushedFilters: [IsNotNull(s_nationkey), IsNotNull(s_suppkey)], ReadSchema: struct<s_suppkey:int,s_nationkey:int>
+                  :           :           +- *(6) Sort [l_suppkey#9902 ASC NULLS FIRST], false, 0
+                  :           :              +- Exchange hashpartitioning(l_suppkey#9902, 200)
+                  :           :                 +- *(5) Project [l_orderkey#9900, l_suppkey#9902, l_extendedprice#9905, l_discount#9906]
+                  :           :                    +- *(5) Filter (isnotnull(l_suppkey#9902) && isnotnull(l_orderkey#9900))
+                  :           :                       +- *(5) FileScan avro [l_orderkey#9900,l_suppkey#9902,l_extendedprice#9905,l_discount#9906] Batched: false, Format: com.databricks.spark.avro.DefaultSource@1265e3e0, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.avro], PartitionFilters: [], PushedFilters: [IsNotNull(l_suppkey), IsNotNull(l_orderkey)], ReadSchema: struct<l_orderkey:int,l_suppkey:int,l_extendedprice:double,l_discount:double>
+                  :           +- *(10) Sort [o_orderkey#9743 ASC NULLS FIRST], false, 0
+                  :              +- Exchange hashpartitioning(o_orderkey#9743, 200)
+                  :                 +- *(9) Project [o_orderkey#9743, o_custkey#9744]
+                  :                    +- *(9) Filter ((((isnotnull(o_orderdates#9747) && (o_orderdates#9747 < 1995-01-01)) && (o_orderdates#9747 >= 1994-01-01)) && isnotnull(o_orderkey#9743)) && isnotnull(o_custkey#9744))
+                  :                       +- *(9) FileScan avro [o_orderkey#9743,o_custkey#9744,o_orderdates#9747] Batched: false, Format: com.databricks.spark.avro.DefaultSource@221b3415, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.avro], PartitionFilters: [], PushedFilters: [IsNotNull(o_orderdates), LessThan(o_orderdates,1995-01-01), GreaterThanOrEqual(o_orderdates,1994..., ReadSchema: struct<o_orderkey:int,o_custkey:int,o_orderdates:string>
+                  +- *(14) Sort [c_custkey#9766 ASC NULLS FIRST, c_nationkey#9769 ASC NULLS FIRST], false, 0
+                     +- Exchange hashpartitioning(c_custkey#9766, c_nationkey#9769, 200)
+                        +- *(13) Project [c_custkey#9766, c_nationkey#9769]
+                           +- *(13) Filter (isnotnull(c_nationkey#9769) && isnotnull(c_custkey#9766))
+                              +- *(13) FileScan avro [c_custkey#9766,c_nationkey#9769] Batched: false, Format: com.databricks.spark.avro.DefaultSource@78c9fd24, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.avro], PartitionFilters: [], PushedFilters: [IsNotNull(c_nationkey), IsNotNull(c_custkey)], ReadSchema: struct<c_custkey:int,c_nationkey:int>

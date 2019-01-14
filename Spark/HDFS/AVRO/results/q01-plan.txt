@@ -1,10 +1,11 @@
 
+
 == Physical Plan ==
-*(3) Sort [l_returnflag#8 ASC NULLS FIRST, l_linestatus#9 ASC NULLS FIRST], true, 0
-+- Exchange rangepartitioning(l_returnflag#8 ASC NULLS FIRST, l_linestatus#9 ASC NULLS FIRST, 200)
-   +- *(2) HashAggregate(keys=[l_returnflag#8, l_linestatus#9], functions=[sum(cast(l_quantity#4 as double)), sum(cast(l_extendedprice#5 as double)), sum(cast((l_extendedprice#5 * (1.0 - l_discount#6)) as double)), sum(cast((l_extendedprice#5 * (1.0 - (l_discount#6 * (l_tax#7 + 1.0)))) as double)), avg(cast(l_quantity#4 as double)), avg(cast(l_extendedprice#5 as double)), avg(cast(l_discount#6 as double)), count(l_quantity#4)])
-      +- Exchange hashpartitioning(l_returnflag#8, l_linestatus#9, 200)
-         +- *(1) HashAggregate(keys=[l_returnflag#8, l_linestatus#9], functions=[partial_sum(cast(l_quantity#4 as double)), partial_sum(cast(l_extendedprice#5 as double)), partial_sum(cast((l_extendedprice#5 * (1.0 - l_discount#6)) as double)), partial_sum(cast((l_extendedprice#5 * (1.0 - (l_discount#6 * (l_tax#7 + 1.0)))) as double)), partial_avg(cast(l_quantity#4 as double)), partial_avg(cast(l_extendedprice#5 as double)), partial_avg(cast(l_discount#6 as double)), partial_count(l_quantity#4)])
-            +- *(1) Project [L_QUANTITY#4, L_EXTENDEDPRICE#5, L_DISCOUNT#6, L_TAX#7, L_RETURNFLAG#8, L_LINESTATUS#9]
-               +- *(1) Filter (isnotnull(l_shipdate#10) && (l_shipdate#10 <= 1998-11-27))
-                  +- *(1) FileScan avro [L_QUANTITY#4,L_EXTENDEDPRICE#5,L_DISCOUNT#6,L_TAX#7,L_RETURNFLAG#8,L_LINESTATUS#9,L_SHIPDATE#10] Batched: false, Format: com.databricks.spark.avro.DefaultSource@3798fcc9, Location: InMemoryFileIndex[hdfs://namenode:8020/mahan-data/lineitem.avro], PartitionFilters: [], PushedFilters: [IsNotNull(L_SHIPDATE), LessThanOrEqual(L_SHIPDATE,1998-11-27)], ReadSchema: struct<L_QUANTITY:float,L_EXTENDEDPRICE:float,L_DISCOUNT:float,L_TAX:float,L_RETURNFLAG:string,L_...
+*(3) Sort [l_returnflag#9908 ASC NULLS FIRST, l_linestatus#9909 ASC NULLS FIRST], true, 0
++- Exchange rangepartitioning(l_returnflag#9908 ASC NULLS FIRST, l_linestatus#9909 ASC NULLS FIRST, 200)
+   +- *(2) HashAggregate(keys=[l_returnflag#9908, l_linestatus#9909], functions=[sum(l_quantity#9904), sum(l_extendedprice#9905), sum((l_extendedprice#9905 * (1.0 - l_discount#9906))), sum((l_extendedprice#9905 * (1.0 - (l_discount#9906 * (l_tax#9907 + 1.0))))), avg(l_quantity#9904), avg(l_extendedprice#9905), avg(l_discount#9906), count(l_quantity#9904)])
+      +- Exchange hashpartitioning(l_returnflag#9908, l_linestatus#9909, 200)
+         +- *(1) HashAggregate(keys=[l_returnflag#9908, l_linestatus#9909], functions=[partial_sum(l_quantity#9904), partial_sum(l_extendedprice#9905), partial_sum((l_extendedprice#9905 * (1.0 - l_discount#9906))), partial_sum((l_extendedprice#9905 * (1.0 - (l_discount#9906 * (l_tax#9907 + 1.0))))), partial_avg(l_quantity#9904), partial_avg(l_extendedprice#9905), partial_avg(l_discount#9906), partial_count(l_quantity#9904)])
+            +- *(1) Project [l_quantity#9904, l_extendedprice#9905, l_discount#9906, l_tax#9907, l_returnflag#9908, l_linestatus#9909]
+               +- *(1) Filter (isnotnull(l_shipdate#9910) && (l_shipdate#9910 <= 1998-11-27))
+                  +- *(1) FileScan avro [l_quantity#9904,l_extendedprice#9905,l_discount#9906,l_tax#9907,l_returnflag#9908,l_linestatus#9909,l_shipdate#9910] Batched: false, Format: com.databricks.spark.avro.DefaultSource@1265e3e0, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.avro], PartitionFilters: [], PushedFilters: [IsNotNull(l_shipdate), LessThanOrEqual(l_shipdate,1998-11-27)], ReadSchema: struct<l_quantity:double,l_extendedprice:double,l_discount:double,l_tax:double,l_returnflag:strin...
