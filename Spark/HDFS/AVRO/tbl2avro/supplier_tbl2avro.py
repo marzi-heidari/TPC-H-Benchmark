@@ -22,4 +22,4 @@ df = data.\
         's_comment':x[6],\
         's_dummy':x[7]})\
     .toDF(schema)
-df.write.mode("overwrite").orc("hdfs://namenode:8020/supplier.orc")
+df.write.mode('overwrite').format("com.databricks.spark.avro").save("hdfs://namenode:8020/supplier.avro")

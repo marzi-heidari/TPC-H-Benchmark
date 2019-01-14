@@ -30,4 +30,4 @@ df = data.\
         'p_comment':x[8],\
         'ps_dummy':x[9]})\
     .toDF(schema)
-    df.write.mode("overwrite").orc("hdfs://namenode:8020/part.orc")
+ df.write.mode('overwrite').format("com.databricks.spark.avro").save("hdfs://namenode:8020/part.avro")

@@ -51,4 +51,4 @@ df = data.\
 
         'l_dummy':x[16]})\
     .toDF(schema)
-df.write.mode("overwrite").orc("hdfs://namenode:8020/lineitem.orc")
+df.write.mode('overwrite').format("com.databricks.spark.avro").save("hdfs://namenode:8020/lineitem.avro")

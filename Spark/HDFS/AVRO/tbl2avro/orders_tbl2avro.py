@@ -33,4 +33,4 @@ df = data.\
         'o_commen':x[8],\
         'o_dummy':x[9]})\
     .toDF(schema)
-    df.write.mode("overwrite").orc("hdfs://namenode:8020/orders.orc")
+   df.write.mode('overwrite').format("com.databricks.spark.avro").save("hdfs://namenode:8020/orders.avro")

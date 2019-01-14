@@ -1,15 +1,14 @@
 from pyspark.sql.functions import *
 
 
-middle_east = region.filter("'r_name' == 'MIDDLE EAST'")
+middle_east = region.filter("r_name == 'MIDDLE EAST'")
       .join(nation, region.r_regionkey == nation.n_regionkey)
       .join(supplier, nation.n_nationkey == supplier.s_nationkey)
 .join(partsupp, supplier.s_suppkey == partsupp.ps_suppkey)
 
 tin = part.filter("p_size == 38").filter(part.p_type.endswith('TIN')).join(middle_east, middle_east.ps_partkey == part.p_partkey)
 
-minCost = tin.groupBy(tin.ps_partkey)
-.agg(min(tin.ps_supplycost).alias("min"))
+minCost = tin.groupBy(tin.ps_partkey).agg(min(tin.ps_supplycost).alias("min"))
 
 q2=tin.join(minCost, tin.ps_partkey == minCost.ps_partkey)
       .filter(tin.ps_supplycost == minCost.min)

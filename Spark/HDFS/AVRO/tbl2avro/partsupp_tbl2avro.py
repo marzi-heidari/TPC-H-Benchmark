@@ -21,4 +21,4 @@ df = data.\
         'ps_comment':x[4],\
         'ps_dummy':x[5]})\
     .toDF(schema)
-    df.write.mode("overwrite").parquet("hdfs://namenode:8020/partsupp.parquet")
+df.write.mode('overwrite').format("com.databricks.spark.avro").save("hdfs://namenode:8020/partsupp.avro")

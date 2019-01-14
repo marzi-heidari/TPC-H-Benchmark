@@ -17,4 +17,4 @@ df = data.\
         'n_regionkey':int(x[2]),\
         'n_comment':x[3]})\
     .toDF(schema)
-    df.write.mode("overwrite").orc("hdfs://namenode:8020/orc.parquet")
+df.write.mode('overwrite').format("com.databricks.spark.avro").save("hdfs://namenode:8020/nation.avro")

@@ -15,5 +15,4 @@ df = data.\
         'r_comment':x[2],\
         'r_dummy':x[3]})\
     .toDF(schema)
-
-df.write.mode("overwrite").orc("hdfs://namenode:8020/region.orc"
+df.write.mode('overwrite').format("com.databricks.spark.avro").save("hdfs://namenode:8020/region.avro")
