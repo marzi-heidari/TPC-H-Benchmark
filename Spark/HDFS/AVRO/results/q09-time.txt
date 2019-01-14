@@ -1,0 +1,28 @@
+
++--------------------+------+-----------+
+|              n_name|o_year|sum(amount)|
++--------------------+------+-----------+
+|ALGERIA          ...|  1998|       null|
+|ALGERIA          ...|  1997|       null|
+|ALGERIA          ...|  1996|       null|
+|ALGERIA          ...|  1995|       null|
+|ALGERIA          ...|  1994|       null|
+|ALGERIA          ...|  1993|       null|
+|ALGERIA          ...|  1992|       null|
+|ARGENTINA        ...|  1998|       null|
+|ARGENTINA        ...|  1997|       null|
+|ARGENTINA        ...|  1996|       null|
+|ARGENTINA        ...|  1995|       null|
+|ARGENTINA        ...|  1994|       null|
+|ARGENTINA        ...|  1993|       null|
+|ARGENTINA        ...|  1992|       null|
+|BRAZIL           ...|  1998|       null|
+|BRAZIL           ...|  1997|       null|
+|BRAZIL           ...|  1996|       null|
+|BRAZIL           ...|  1995|       null|
+|BRAZIL           ...|  1994|       null|
+|BRAZIL           ...|  1993|       null|
++--------------------+------+-----------+
+only showing top 20 rows
+
+0.17689900000000014

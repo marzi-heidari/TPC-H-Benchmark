@@ -1,0 +1,25 @@
+
+== Parsed Logical Plan ==
+'Aggregate [sum(('l_extendedprice * 'l_discount)) AS sum((l_extendedprice * l_discount))#732]
++- Filter (((((l_shipdate#14 >= 1994-01-01) && (l_shipdate#14 < 1995-01-01)) && (l_discount#10 >= 0.07)) && (l_discount#10 <= 0.09)) && (l_quantity#8 < cast(24 as double)))
+   +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
+
+== Analyzed Logical Plan ==
+sum((l_extendedprice * l_discount)): double
+Aggregate [sum((l_extendedprice#9 * l_discount#10)) AS sum((l_extendedprice * l_discount))#732]
++- Filter (((((l_shipdate#14 >= 1994-01-01) && (l_shipdate#14 < 1995-01-01)) && (l_discount#10 >= 0.07)) && (l_discount#10 <= 0.09)) && (l_quantity#8 < cast(24 as double)))
+   +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
+
+== Optimized Logical Plan ==
+Aggregate [sum((l_extendedprice#9 * l_discount#10)) AS sum((l_extendedprice * l_discount))#732]
++- Project [l_extendedprice#9, l_discount#10]
+   +- Filter (((((((isnotnull(l_shipdate#14) && isnotnull(l_discount#10)) && isnotnull(l_quantity#8)) && (l_shipdate#14 >= 1994-01-01)) && (l_shipdate#14 < 1995-01-01)) && (l_discount#10 >= 0.07)) && (l_discount#10 <= 0.09)) && (l_quantity#8 < 24.0))
+      +- Relation[l_orderkey#4,l_partkey#5,l_suppkey#6,l_linenumber#7,l_quantity#8,l_extendedprice#9,l_discount#10,l_tax#11,l_returnflag#12,l_linestatus#13,l_shipdate#14,l_commitdate#15,l_receiptdate#16,l_shipinstruct#17,l_shipmode#18,l_comment#19,l_dummy#20] orc
+
+== Physical Plan ==
+*(2) HashAggregate(keys=[], functions=[sum((l_extendedprice#9 * l_discount#10))], output=[sum((l_extendedprice * l_discount))#732])
++- Exchange SinglePartition
+   +- *(1) HashAggregate(keys=[], functions=[partial_sum((l_extendedprice#9 * l_discount#10))], output=[sum#743])
+      +- *(1) Project [l_extendedprice#9, l_discount#10]
+         +- *(1) Filter (((((((isnotnull(l_shipdate#14) && isnotnull(l_discount#10)) && isnotnull(l_quantity#8)) && (l_shipdate#14 >= 1994-01-01)) && (l_shipdate#14 < 1995-01-01)) && (l_discount#10 >= 0.07)) && (l_discount#10 <= 0.09)) && (l_quantity#8 < 24.0))
+            +- *(1) FileScan orc [l_quantity#8,l_extendedprice#9,l_discount#10,l_shipdate#14] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_shipdate), IsNotNull(l_discount), IsNotNull(l_quantity), GreaterThanOrEqual(l_shipda..., ReadSchema: struct<l_quantity:double,l_extendedprice:double,l_discount:double,l_shipdate:string>

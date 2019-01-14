@@ -1,0 +1,125 @@
+
+== Parsed Logical Plan ==
+'Sort ['s_name ASC NULLS FIRST], true
++- AnalysisBarrier
+      +- Project [s_name#1035, s_address#1036]
+         +- Join Inner, (ps_suppkey#1079 = s_suppkey#1034)
+            :- Deduplicate [ps_suppkey#1079]
+            :  +- Project [ps_suppkey#1079]
+            :     +- Filter (cast(ps_availqty#1080 as double) > sum_quantity#1021)
+            :        +- Join Inner, ((ps_suppkey#1079 = l_suppkey#277) && (ps_partkey#1078 = l_partkey#276))
+            :           :- Join Inner, (p_partkey#38 = ps_partkey#1078)
+            :           :  :- Deduplicate [p_partkey#38]
+            :           :  :  +- Project [p_partkey#38]
+            :           :  :     +- Filter UDF(p_name#39)
+            :           :  :        +- Relation[p_partkey#38,p_name#39,p_mfgr#40,p_brand#41,p_type#42,p_size#43,p_container#44,p_retailprice#45,p_comment#46,p_dummy#47] orc
+            :           :  +- Relation[ps_partkey#1078,ps_suppkey#1079,ps_availqty#1080,ps_supplycost#1081,ps_comment#1082,ps_dummy#1083] orc
+            :           +- Aggregate [l_partkey#276, l_suppkey#277], [l_partkey#276, l_suppkey#277, (sum(l_quantity#279) * 0.5) AS sum_quantity#1021]
+            :              +- Filter ((l_shipdate#285 >= 1994-01-01) && (l_shipdate#285 < 1995-01-01))
+            :                 +- Relation[l_orderkey#275,l_partkey#276,l_suppkey#277,l_linenumber#278,l_quantity#279,l_extendedprice#280,l_discount#281,l_tax#282,l_returnflag#283,l_linestatus#284,l_shipdate#285,l_commitdate#286,l_receiptdate#287,l_shipinstruct#288,l_shipmode#289,l_comment#290,l_dummy#291] orc
+            +- Join Inner, (s_nationkey#1037 = n_nationkey#1025)
+               :- Project [s_suppkey#1034, s_name#1035, s_nationkey#1037, s_address#1036]
+               :  +- Relation[s_suppkey#1034,s_name#1035,s_address#1036,s_nationkey#1037,s_phone#1038,s_acctbal#1039,s_comment#1040,s_dummy#1041] orc
+               +- Filter (n_name#1026 = IRAN)
+                  +- Relation[n_nationkey#1025,n_name#1026,n_regionkey#1027,n_comment#1028] orc
+
+== Analyzed Logical Plan ==
+s_name: string, s_address: string
+Sort [s_name#1035 ASC NULLS FIRST], true
++- Project [s_name#1035, s_address#1036]
+   +- Join Inner, (ps_suppkey#1079 = s_suppkey#1034)
+      :- Deduplicate [ps_suppkey#1079]
+      :  +- Project [ps_suppkey#1079]
+      :     +- Filter (cast(ps_availqty#1080 as double) > sum_quantity#1021)
+      :        +- Join Inner, ((ps_suppkey#1079 = l_suppkey#277) && (ps_partkey#1078 = l_partkey#276))
+      :           :- Join Inner, (p_partkey#38 = ps_partkey#1078)
+      :           :  :- Deduplicate [p_partkey#38]
+      :           :  :  +- Project [p_partkey#38]
+      :           :  :     +- Filter UDF(p_name#39)
+      :           :  :        +- Relation[p_partkey#38,p_name#39,p_mfgr#40,p_brand#41,p_type#42,p_size#43,p_container#44,p_retailprice#45,p_comment#46,p_dummy#47] orc
+      :           :  +- Relation[ps_partkey#1078,ps_suppkey#1079,ps_availqty#1080,ps_supplycost#1081,ps_comment#1082,ps_dummy#1083] orc
+      :           +- Aggregate [l_partkey#276, l_suppkey#277], [l_partkey#276, l_suppkey#277, (sum(l_quantity#279) * 0.5) AS sum_quantity#1021]
+      :              +- Filter ((l_shipdate#285 >= 1994-01-01) && (l_shipdate#285 < 1995-01-01))
+      :                 +- Relation[l_orderkey#275,l_partkey#276,l_suppkey#277,l_linenumber#278,l_quantity#279,l_extendedprice#280,l_discount#281,l_tax#282,l_returnflag#283,l_linestatus#284,l_shipdate#285,l_commitdate#286,l_receiptdate#287,l_shipinstruct#288,l_shipmode#289,l_comment#290,l_dummy#291] orc
+      +- Join Inner, (s_nationkey#1037 = n_nationkey#1025)
+         :- Project [s_suppkey#1034, s_name#1035, s_nationkey#1037, s_address#1036]
+         :  +- Relation[s_suppkey#1034,s_name#1035,s_address#1036,s_nationkey#1037,s_phone#1038,s_acctbal#1039,s_comment#1040,s_dummy#1041] orc
+         +- Filter (n_name#1026 = IRAN)
+            +- Relation[n_nationkey#1025,n_name#1026,n_regionkey#1027,n_comment#1028] orc
+
+== Optimized Logical Plan ==
+Sort [s_name#1035 ASC NULLS FIRST], true
++- Project [s_name#1035, s_address#1036]
+   +- Join Inner, (ps_suppkey#1079 = s_suppkey#1034)
+      :- Aggregate [ps_suppkey#1079], [ps_suppkey#1079]
+      :  +- Project [ps_suppkey#1079]
+      :     +- Join Inner, (((ps_suppkey#1079 = l_suppkey#277) && (ps_partkey#1078 = l_partkey#276)) && (cast(ps_availqty#1080 as double) > sum_quantity#1021))
+      :        :- Project [ps_partkey#1078, ps_suppkey#1079, ps_availqty#1080]
+      :        :  +- Join Inner, (p_partkey#38 = ps_partkey#1078)
+      :        :     :- Aggregate [p_partkey#38], [p_partkey#38]
+      :        :     :  +- Project [p_partkey#38]
+      :        :     :     +- Filter (UDF(p_name#39) && isnotnull(p_partkey#38))
+      :        :     :        +- Relation[p_partkey#38,p_name#39,p_mfgr#40,p_brand#41,p_type#42,p_size#43,p_container#44,p_retailprice#45,p_comment#46,p_dummy#47] orc
+      :        :     +- Project [ps_partkey#1078, ps_suppkey#1079, ps_availqty#1080]
+      :        :        +- Filter ((isnotnull(ps_partkey#1078) && isnotnull(ps_suppkey#1079)) && isnotnull(ps_availqty#1080))
+      :        :           +- Relation[ps_partkey#1078,ps_suppkey#1079,ps_availqty#1080,ps_supplycost#1081,ps_comment#1082,ps_dummy#1083] orc
+      :        +- Filter isnotnull(sum_quantity#1021)
+      :           +- Aggregate [l_partkey#276, l_suppkey#277], [l_partkey#276, l_suppkey#277, (sum(l_quantity#279) * 0.5) AS sum_quantity#1021]
+      :              +- Project [l_partkey#276, l_suppkey#277, l_quantity#279]
+      :                 +- Filter ((((isnotnull(l_shipdate#285) && (l_shipdate#285 >= 1994-01-01)) && (l_shipdate#285 < 1995-01-01)) && isnotnull(l_suppkey#277)) && isnotnull(l_partkey#276))
+      :                    +- Relation[l_orderkey#275,l_partkey#276,l_suppkey#277,l_linenumber#278,l_quantity#279,l_extendedprice#280,l_discount#281,l_tax#282,l_returnflag#283,l_linestatus#284,l_shipdate#285,l_commitdate#286,l_receiptdate#287,l_shipinstruct#288,l_shipmode#289,l_comment#290,l_dummy#291] orc
+      +- Project [s_suppkey#1034, s_name#1035, s_address#1036]
+         +- Join Inner, (s_nationkey#1037 = n_nationkey#1025)
+            :- Project [s_suppkey#1034, s_name#1035, s_nationkey#1037, s_address#1036]
+            :  +- Filter (isnotnull(s_nationkey#1037) && isnotnull(s_suppkey#1034))
+            :     +- Relation[s_suppkey#1034,s_name#1035,s_address#1036,s_nationkey#1037,s_phone#1038,s_acctbal#1039,s_comment#1040,s_dummy#1041] orc
+            +- Project [n_nationkey#1025]
+               +- Filter ((isnotnull(n_name#1026) && (n_name#1026 = IRAN)) && isnotnull(n_nationkey#1025))
+                  +- Relation[n_nationkey#1025,n_name#1026,n_regionkey#1027,n_comment#1028] orc
+
+== Physical Plan ==
+*(15) Sort [s_name#1035 ASC NULLS FIRST], true, 0
++- Exchange rangepartitioning(s_name#1035 ASC NULLS FIRST, 200)
+   +- *(14) Project [s_name#1035, s_address#1036]
+      +- *(14) SortMergeJoin [ps_suppkey#1079], [s_suppkey#1034], Inner
+         :- *(10) Sort [ps_suppkey#1079 ASC NULLS FIRST], false, 0
+         :  +- *(10) HashAggregate(keys=[ps_suppkey#1079], functions=[], output=[ps_suppkey#1079])
+         :     +- Exchange hashpartitioning(ps_suppkey#1079, 200)
+         :        +- *(9) HashAggregate(keys=[ps_suppkey#1079], functions=[], output=[ps_suppkey#1079])
+         :           +- *(9) Project [ps_suppkey#1079]
+         :              +- *(9) SortMergeJoin [ps_partkey#1078, ps_suppkey#1079], [l_partkey#276, l_suppkey#277], Inner, (cast(ps_availqty#1080 as double) > sum_quantity#1021)
+         :                 :- *(6) Sort [ps_partkey#1078 ASC NULLS FIRST, ps_suppkey#1079 ASC NULLS FIRST], false, 0
+         :                 :  +- Exchange hashpartitioning(ps_partkey#1078, ps_suppkey#1079, 200)
+         :                 :     +- *(5) Project [ps_partkey#1078, ps_suppkey#1079, ps_availqty#1080]
+         :                 :        +- *(5) SortMergeJoin [p_partkey#38], [ps_partkey#1078], Inner
+         :                 :           :- *(2) Sort [p_partkey#38 ASC NULLS FIRST], false, 0
+         :                 :           :  +- *(2) HashAggregate(keys=[p_partkey#38], functions=[], output=[p_partkey#38])
+         :                 :           :     +- Exchange hashpartitioning(p_partkey#38, 200)
+         :                 :           :        +- *(1) HashAggregate(keys=[p_partkey#38], functions=[], output=[p_partkey#38])
+         :                 :           :           +- *(1) Project [p_partkey#38]
+         :                 :           :              +- *(1) Filter (UDF(p_name#39) && isnotnull(p_partkey#38))
+         :                 :           :                 +- *(1) FileScan orc [p_partkey#38,p_name#39] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/part.orc], PartitionFilters: [], PushedFilters: [IsNotNull(p_partkey)], ReadSchema: struct<p_partkey:int,p_name:string>
+         :                 :           +- *(4) Sort [ps_partkey#1078 ASC NULLS FIRST], false, 0
+         :                 :              +- Exchange hashpartitioning(ps_partkey#1078, 200)
+         :                 :                 +- *(3) Project [ps_partkey#1078, ps_suppkey#1079, ps_availqty#1080]
+         :                 :                    +- *(3) Filter ((isnotnull(ps_partkey#1078) && isnotnull(ps_suppkey#1079)) && isnotnull(ps_availqty#1080))
+         :                 :                       +- *(3) FileScan orc [ps_partkey#1078,ps_suppkey#1079,ps_availqty#1080] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/partsupp.orc], PartitionFilters: [], PushedFilters: [IsNotNull(ps_partkey), IsNotNull(ps_suppkey), IsNotNull(ps_availqty)], ReadSchema: struct<ps_partkey:int,ps_suppkey:int,ps_availqty:int>
+         :                 +- *(8) Sort [l_partkey#276 ASC NULLS FIRST, l_suppkey#277 ASC NULLS FIRST], false, 0
+         :                    +- *(8) Filter isnotnull(sum_quantity#1021)
+         :                       +- *(8) HashAggregate(keys=[l_partkey#276, l_suppkey#277], functions=[sum(l_quantity#279)], output=[l_partkey#276, l_suppkey#277, sum_quantity#1021])
+         :                          +- Exchange hashpartitioning(l_partkey#276, l_suppkey#277, 200)
+         :                             +- *(7) HashAggregate(keys=[l_partkey#276, l_suppkey#277], functions=[partial_sum(l_quantity#279)], output=[l_partkey#276, l_suppkey#277, sum#1185])
+         :                                +- *(7) Project [l_partkey#276, l_suppkey#277, l_quantity#279]
+         :                                   +- *(7) Filter ((((isnotnull(l_shipdate#285) && (l_shipdate#285 >= 1994-01-01)) && (l_shipdate#285 < 1995-01-01)) && isnotnull(l_suppkey#277)) && isnotnull(l_partkey#276))
+         :                                      +- *(7) FileScan orc [l_partkey#276,l_suppkey#277,l_quantity#279,l_shipdate#285] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/lineitem.orc], PartitionFilters: [], PushedFilters: [IsNotNull(l_shipdate), GreaterThanOrEqual(l_shipdate,1994-01-01), LessThan(l_shipdate,1995-01-01..., ReadSchema: struct<l_partkey:int,l_suppkey:int,l_quantity:double,l_shipdate:string>
+         +- *(13) Sort [s_suppkey#1034 ASC NULLS FIRST], false, 0
+            +- Exchange hashpartitioning(s_suppkey#1034, 200)
+               +- *(12) Project [s_suppkey#1034, s_name#1035, s_address#1036]
+                  +- *(12) BroadcastHashJoin [s_nationkey#1037], [n_nationkey#1025], Inner, BuildRight
+                     :- *(12) Project [s_suppkey#1034, s_name#1035, s_nationkey#1037, s_address#1036]
+                     :  +- *(12) Filter (isnotnull(s_nationkey#1037) && isnotnull(s_suppkey#1034))
+                     :     +- *(12) FileScan orc [s_suppkey#1034,s_name#1035,s_address#1036,s_nationkey#1037] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/supplier.orc], PartitionFilters: [], PushedFilters: [IsNotNull(s_nationkey), IsNotNull(s_suppkey)], ReadSchema: struct<s_suppkey:int,s_name:string,s_address:string,s_nationkey:int>
+                     +- BroadcastExchange HashedRelationBroadcastMode(List(cast(input[0, int, true] as bigint)))
+                        +- *(11) Project [n_nationkey#1025]
+                           +- *(11) Filter ((isnotnull(n_name#1026) && (n_name#1026 = IRAN)) && isnotnull(n_nationkey#1025))
+                              +- *(11) FileScan orc [n_nationkey#1025,n_name#1026] Batched: true, Format: ORC, Location: InMemoryFileIndex[hdfs://namenode:8020/nation.orc], PartitionFilters: [], PushedFilters: [IsNotNull(n_name), EqualTo(n_name,IRAN), IsNotNull(n_nationkey)], ReadSchema: struct<n_nationkey:int,n_name:string>
