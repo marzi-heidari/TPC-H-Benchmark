@@ -1,0 +1,35 @@
+
+== Physical Plan ==
+*(13) Sort [cntrycode#202 ASC NULLS FIRST], true, 0
++- Exchange rangepartitioning(cntrycode#202 ASC NULLS FIRST, 200)
+   +- *(12) HashAggregate(keys=[cntrycode#202], functions=[count(c_acctbal#115), sum(c_acctbal#115)])
+      +- Exchange hashpartitioning(cntrycode#202, 200)
+         +- *(11) HashAggregate(keys=[cntrycode#202], functions=[partial_count(c_acctbal#115), partial_sum(c_acctbal#115)])
+            +- *(11) Project [c_acctbal#115, cntrycode#202]
+               +- BroadcastNestedLoopJoin BuildRight, Inner, (c_acctbal#115 > avg_acctbal#209)
+                  :- *(7) Project [c_acctbal#115, cntrycode#202]
+                  :  +- *(7) Filter isnull(o_custkey#91)
+                  :     +- SortMergeJoin [o_custkey#91], [c_custkey#110], RightOuter
+                  :        :- *(2) Sort [o_custkey#91 ASC NULLS FIRST], false, 0
+                  :        :  +- Exchange hashpartitioning(o_custkey#91, 200)
+                  :        :     +- *(1) FileScan avro [o_custkey#91] Batched: false, Format: com.databricks.spark.avro.DefaultSource@5a7b25a4, Location: InMemoryFileIndex[hdfs://namenode:8020/orders.avro], PartitionFilters: [], PushedFilters: [], ReadSchema: struct<o_custkey:int>
+                  :        +- *(6) Sort [c_custkey#110 ASC NULLS FIRST], false, 0
+                  :           +- Exchange hashpartitioning(c_custkey#110, 200)
+                  :              +- *(5) Project [c_acctbal#115, c_custkey#110, pythonUDF0#1178 AS cntrycode#202]
+                  :                 +- BatchEvalPython [<lambda>(c_phone#114)], [c_custkey#110, c_phone#114, c_acctbal#115, pythonUDF0#1178]
+                  :                    +- *(4) Project [c_custkey#110, c_phone#114, c_acctbal#115]
+                  :                       +- *(4) Filter pythonUDF0#1177: boolean
+                  :                          +- BatchEvalPython [<lambda>(<lambda>(c_phone#114))], [c_custkey#110, c_phone#114, c_acctbal#115, pythonUDF0#1177]
+                  :                             +- *(3) Filter isnotnull(c_acctbal#115)
+                  :                                +- *(3) FileScan avro [c_custkey#110,c_phone#114,c_acctbal#115] Batched: false, Format: com.databricks.spark.avro.DefaultSource@65fd1852, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.avro], PartitionFilters: [], PushedFilters: [IsNotNull(c_acctbal)], ReadSchema: struct<c_custkey:int,c_phone:string,c_acctbal:double>
+                  +- BroadcastExchange IdentityBroadcastMode
+                     +- *(10) Filter isnotnull(avg_acctbal#209)
+                        +- *(10) HashAggregate(keys=[], functions=[avg(c_acctbal#115)])
+                           +- Exchange SinglePartition
+                              +- *(9) HashAggregate(keys=[], functions=[partial_avg(c_acctbal#115)])
+                                 +- *(9) Project [c_acctbal#115]
+                                    +- *(9) Project [c_phone#114, c_acctbal#115]
+                                       +- *(9) Filter pythonUDF0#1179: boolean
+                                          +- BatchEvalPython [<lambda>(<lambda>(c_phone#114))], [c_phone#114, c_acctbal#115, pythonUDF0#1179]
+                                             +- *(8) Filter (isnotnull(c_acctbal#115) && (c_acctbal#115 > 0.0))
+                                                +- *(8) FileScan avro [c_phone#114,c_acctbal#115] Batched: false, Format: com.databricks.spark.avro.DefaultSource@65fd1852, Location: InMemoryFileIndex[hdfs://namenode:8020/customer.avro], PartitionFilters: [], PushedFilters: [IsNotNull(c_acctbal), GreaterThan(c_acctbal,0.0)], ReadSchema: struct<c_phone:string,c_acctbal:double>
